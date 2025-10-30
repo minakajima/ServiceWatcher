@@ -45,19 +45,19 @@
 
 ### Result Type and Validation
 
-- [ ] T011 [P] Create Result<T> class in Utils/Result.cs for explicit success/failure handling
-- [ ] T012 [P] Create ValidationResult class in Utils/ValidationResult.cs with error list
-- [ ] T013 [P] Create ServiceStatus enum in Models/ServiceStatus.cs mapping to ServiceControllerStatus
+- [X] T011 [P] Create Result<T> class in Utils/Result.cs for explicit success/failure handling
+- [X] T012 [P] Create ValidationResult class in Utils/ValidationResult.cs with error list
+- [X] T013 [P] Create ServiceStatus enum in Models/ServiceStatus.cs mapping to ServiceControllerStatus
 
 ### Logging Infrastructure
 
-- [ ] T014 [P] Create Logger class in Utils/Logger.cs wrapping Microsoft.Extensions.Logging
-- [ ] T015 [P] Implement log file rotation logic (10MB max, keep 10 files) in Utils/Logger.cs
+- [X] T014 [P] Create Logger class in Utils/Logger.cs wrapping Microsoft.Extensions.Logging
+- [X] T015 [P] Implement log file rotation logic (10MB max, keep 10 files) in Utils/Logger.cs
 
 ### Extension Methods
 
-- [ ] T016 [P] Create ServiceControllerExtensions class in Utils/ServiceControllerExtensions.cs
-- [ ] T017 [P] Add ToServiceStatus() extension method to convert ServiceControllerStatus to ServiceStatus
+- [X] T016 [P] Create ServiceControllerExtensions class in Utils/ServiceControllerExtensions.cs
+- [X] T017 [P] Add ToServiceStatus() extension method to convert ServiceControllerStatus to ServiceStatus
 
 ---
 
