@@ -34,6 +34,7 @@ public partial class MainForm : Form
         // Initialize UI
         UpdateStatusLabel("準備完了");
         btnStop.Enabled = false;
+        RefreshServiceList();
     }
 
     /// <summary>
@@ -43,15 +44,85 @@ public partial class MainForm : Form
     {
         try
         {
-            // Add a test service for MVP (will be configurable in US2)
-            var testService = new MonitoredService
-            {
-                ServiceName = "wuauserv",
-                DisplayName = "Windows Update",
-                NotificationEnabled = true
-            };
+            // Validate configuration file
+            var configPath = SimpleConfigLoader.GetDefaultConfigPath();
             
-            await _serviceMonitor.AddServiceAsync(testService);
+            if (!File.Exists(configPath))
+            {
+                var createDialog = MessageBox.Show(
+                    "config.jsonファイルが見つかりません。\n\n" +
+                    "デフォルトの設定ファイルを作成しますか？",
+                    "設定ファイルなし",
+                    MessageBoxButtons.YesNo,
+                    MessageBoxIcon.Question);
+
+                if (createDialog == DialogResult.Yes)
+                {
+                    var createResult = ConfigurationHelper.CreateDefaultConfig(configPath, _logger);
+                    if (!createResult.IsSuccess)
+                    {
+                        MessageBox.Show(createResult.Error, "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        return;
+                    }
+                }
+                else
+                {
+                    return;
+                }
+            }
+
+            var validateResult = ConfigurationHelper.ValidateAndRepairConfig(configPath, _logger);
+            if (!validateResult.IsSuccess)
+            {
+                var restoreDialog = MessageBox.Show(
+                    validateResult.Error + "\n\nバックアップから復元しますか？",
+                    "設定ファイルエラー",
+                    MessageBoxButtons.YesNo,
+                    MessageBoxIcon.Warning);
+
+                if (restoreDialog == DialogResult.Yes)
+                {
+                    var restoreResult = ConfigurationHelper.RestoreFromBackup(configPath, _logger);
+                    if (!restoreResult.IsSuccess)
+                    {
+                        MessageBox.Show(restoreResult.Error, "復元失敗", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        return;
+                    }
+                }
+                else
+                {
+                    return;
+                }
+            }
+
+            // Load services from config.json (US2 simple implementation)
+            var services = SimpleConfigLoader.LoadServices();
+            var interval = SimpleConfigLoader.LoadMonitoringInterval();
+            
+            if (services.Count == 0)
+            {
+                MessageBox.Show(
+                    "config.jsonに監視対象サービスが設定されていません。\n\n" +
+                    "「サービス管理」ボタンから監視対象サービスを追加してください。",
+                    "設定エラー",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Information);
+                return;
+            }
+            
+            // Update monitoring interval before adding services
+            var intervalResult = await _serviceMonitor.UpdateMonitoringIntervalAsync(interval);
+            if (!intervalResult.IsSuccess)
+            {
+                _logger.LogWarning($"Failed to update monitoring interval: {intervalResult.Error}");
+            }
+            
+            // Add services from configuration
+            foreach (var service in services)
+            {
+                await _serviceMonitor.AddServiceAsync(service);
+                _logger.LogInformation($"Added service from config: {service.ServiceName}");
+            }
             
             _cancellationTokenSource = new CancellationTokenSource();
             var result = await _serviceMonitor.StartMonitoringAsync(_cancellationTokenSource.Token);
@@ -61,7 +132,7 @@ public partial class MainForm : Form
                 UpdateStatusLabel($"監視中 - {_serviceMonitor.MonitoredServices.Count}個のサービス");
                 btnStart.Enabled = false;
                 btnStop.Enabled = true;
-                _logger.LogInformation("Started monitoring services");
+                _logger.LogInformation($"Started monitoring {services.Count} services with {interval}s interval");
             }
             else
             {
@@ -153,6 +224,85 @@ public partial class MainForm : Form
         else
         {
             lblStatus.Text = text;
+        }
+    }
+
+    /// <summary>
+    /// Opens the service management form.
+    /// </summary>
+    private void btnManageServices_Click(object sender, EventArgs e)
+    {
+        try
+        {
+            var loggerFactory = new Utils.LoggerFactory();
+            var serviceListForm = new ServiceListForm(
+                _serviceMonitor,
+                loggerFactory.CreateLogger<ServiceListForm>());
+            
+            if (serviceListForm.ShowDialog() == DialogResult.OK)
+            {
+                RefreshServiceList();
+                _logger.LogInformation("Service list updated");
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error opening service list form");
+            MessageBox.Show($"サービス管理画面の表示に失敗しました: {ex.Message}", "エラー",
+                MessageBoxButtons.OK, MessageBoxIcon.Error);
+        }
+    }
+
+    /// <summary>
+    /// Opens the settings form.
+    /// </summary>
+    private void btnSettings_Click(object sender, EventArgs e)
+    {
+        try
+        {
+            var loggerFactory = new Utils.LoggerFactory();
+            var settingsForm = new SettingsForm(loggerFactory.CreateLogger<SettingsForm>());
+            
+            settingsForm.ShowDialog();
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error opening settings form");
+            MessageBox.Show($"設定画面の表示に失敗しました: {ex.Message}", "エラー",
+                MessageBoxButtons.OK, MessageBoxIcon.Error);
+        }
+    }
+
+    /// <summary>
+    /// Refreshes the monitored services display.
+    /// </summary>
+    private void RefreshServiceList()
+    {
+        try
+        {
+            var services = SimpleConfigLoader.LoadServices();
+            dgvMonitoredServices.DataSource = null;
+            dgvMonitoredServices.DataSource = services.Select(s => new
+            {
+                ServiceName = s.ServiceName,
+                DisplayName = s.DisplayName,
+                NotificationEnabled = s.NotificationEnabled ? "有効" : "無効",
+                Status = s.LastKnownStatus.ToString()
+            }).ToList();
+
+            if (dgvMonitoredServices.Columns.Count > 0)
+            {
+                dgvMonitoredServices.Columns["ServiceName"].HeaderText = "サービス名";
+                dgvMonitoredServices.Columns["DisplayName"].HeaderText = "表示名";
+                dgvMonitoredServices.Columns["NotificationEnabled"].HeaderText = "通知";
+                dgvMonitoredServices.Columns["Status"].HeaderText = "状態";
+            }
+
+            _logger.LogInformation($"Refreshed service list: {services.Count} services");
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error refreshing service list");
         }
     }
 
