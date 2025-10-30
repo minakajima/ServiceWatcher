@@ -75,25 +75,25 @@
 
 ### Service Layer - Monitoring (US1)
 
-- [ ] T021 [US1] Create IServiceMonitor interface in Services/IServiceMonitor.cs with monitoring operations
-- [ ] T022 [US1] Implement ServiceMonitor class constructor and fields in Services/ServiceMonitor.cs
-- [ ] T023 [US1] Implement StartMonitoringAsync method with Timer-based polling in Services/ServiceMonitor.cs
-- [ ] T024 [US1] Implement StopMonitoringAsync method with graceful cancellation in Services/ServiceMonitor.cs
-- [ ] T025 [US1] Implement CheckAllServicesAsync method with status comparison in Services/ServiceMonitor.cs
-- [ ] T026 [US1] Implement GetCurrentStatusAsync helper method in Services/ServiceMonitor.cs
-- [ ] T027 [US1] Add ServiceStatusChanged event raising logic in Services/ServiceMonitor.cs
-- [ ] T028 [US1] Add MonitoringError event for exception handling in Services/ServiceMonitor.cs
-- [ ] T029 [US1] Implement error handling for InvalidOperationException (service not found)
-- [ ] T030 [US1] Implement error handling for Win32Exception (access denied)
+- [X] T021 [US1] Create IServiceMonitor interface in Services/IServiceMonitor.cs with monitoring operations
+- [X] T022 [US1] Implement ServiceMonitor class constructor and fields in Services/ServiceMonitor.cs
+- [X] T023 [US1] Implement StartMonitoringAsync method with Timer-based polling in Services/ServiceMonitor.cs
+- [X] T024 [US1] Implement StopMonitoringAsync method with graceful cancellation in Services/ServiceMonitor.cs
+- [X] T025 [US1] Implement CheckAllServicesAsync method with status comparison in Services/ServiceMonitor.cs
+- [X] T026 [US1] Implement GetCurrentStatusAsync helper method in Services/ServiceMonitor.cs
+- [X] T027 [US1] Add ServiceStatusChanged event raising logic in Services/ServiceMonitor.cs
+- [X] T028 [US1] Add MonitoringError event for exception handling in Services/ServiceMonitor.cs
+- [X] T029 [US1] Implement error handling for InvalidOperationException (service not found)
+- [X] T030 [US1] Implement error handling for Win32Exception (access denied)
 
 ### Service Layer - Notifications (US1)
 
-- [ ] T031 [P] [US1] Create INotificationService interface in Services/INotificationService.cs
-- [ ] T032 [US1] Implement NotificationService class constructor in Services/NotificationService.cs
-- [ ] T033 [US1] Implement ShowNotification method with SynchronizationContext marshaling
-- [ ] T034 [US1] Implement CloseAllNotifications method in Services/NotificationService.cs
-- [ ] T035 [US1] Implement CloseNotification(serviceName) method in Services/NotificationService.cs
-- [ ] T036 [US1] Add NotificationAcknowledged event in Services/NotificationService.cs
+- [X] T031 [P] [US1] Create INotificationService interface in Services/INotificationService.cs
+- [X] T032 [US1] Implement NotificationService class constructor in Services/NotificationService.cs
+- [X] T033 [US1] Implement ShowNotification method with SynchronizationContext marshaling
+- [X] T034 [US1] Implement CloseAllNotifications method in Services/NotificationService.cs
+- [X] T035 [US1] Implement CloseNotification(serviceName) method in Services/NotificationService.cs
+- [X] T036 [US1] Add NotificationAcknowledged event in Services/NotificationService.cs
 
 ### UI Layer - Notification Popup (US1)
 
