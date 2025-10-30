@@ -115,19 +115,19 @@
 
 ### Unit Tests (US1)
 
-- [ ] T049 [P] [US1] Create ServiceMonitorTests.cs in tests/Unit/ with basic test structure
-- [ ] T050 [P] [US1] Test ServiceMonitor.StartMonitoringAsync starts timer correctly
-- [ ] T051 [P] [US1] Test ServiceMonitor.StopMonitoringAsync cancels timer correctly
-- [ ] T052 [P] [US1] Test service status change detection (Running → Stopped) raises event
-- [ ] T053 [P] [US1] Test NotificationService.ShowNotification creates form correctly
-- [ ] T054 [P] [US1] Test NotificationService.CloseAllNotifications closes all forms
+- [X] T049 [P] [US1] Create ServiceMonitorTests.cs in tests/Unit/ with basic test structure
+- [X] T050 [P] [US1] Test ServiceMonitor.StartMonitoringAsync starts timer correctly
+- [X] T051 [P] [US1] Test ServiceMonitor.StopMonitoringAsync cancels timer correctly
+- [X] T052 [P] [US1] Test service status change detection (Running → Stopped) raises event
+- [X] T053 [P] [US1] Test NotificationService.ShowNotification creates form correctly
+- [X] T054 [P] [US1] Test NotificationService.CloseAllNotifications closes all forms
 
 ### Integration Tests (US1)
 
-- [ ] T055 [US1] Create WindowsServiceTests.cs in tests/Integration/
-- [ ] T056 [US1] Test real ServiceController interaction (read-only, safe services only)
-- [ ] T057 [US1] Test monitoring loop with mock service state transitions
-- [ ] T058 [US1] Test error handling when service doesn't exist (InvalidOperationException)
+- [X] T055 [US1] Create WindowsServiceTests.cs in tests/Integration/
+- [X] T056 [US1] Test real ServiceController interaction (read-only, safe services only)
+- [X] T057 [US1] Test monitoring loop with mock service state transitions
+- [X] T058 [US1] Test error handling when service doesn't exist (InvalidOperationException)
 
 ---
 
