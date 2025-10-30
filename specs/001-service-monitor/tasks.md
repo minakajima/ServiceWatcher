@@ -69,9 +69,9 @@
 
 ### Data Models (US1)
 
-- [ ] T018 [P] [US1] Create MonitoredService class in Models/MonitoredService.cs with all properties
-- [ ] T019 [P] [US1] Create ServiceStatusChange class in Models/ServiceStatusChange.cs with event details
-- [ ] T020 [P] [US1] Add IsStopEvent helper property to ServiceStatusChange class
+- [X] T018 [P] [US1] Create MonitoredService class in Models/MonitoredService.cs with all properties
+- [X] T019 [P] [US1] Create ServiceStatusChange class in Models/ServiceStatusChange.cs with event details
+- [X] T020 [P] [US1] Add IsStopEvent helper property to ServiceStatusChange class
 
 ### Service Layer - Monitoring (US1)
 
