@@ -257,40 +257,40 @@
 
 ### Logging Implementation
 
-- [ ] T124 [P] Log all service state changes (Running → Stopped) with timestamp
-- [ ] T125 [P] Log configuration load/save operations with success/failure status
-- [ ] T126 [P] Log monitoring start/stop events with service count
-- [ ] T127 [P] Log all errors with full exception details and stack traces
-- [ ] T128 [P] Implement log file location at %LOCALAPPDATA%\ServiceWatcher\logs\
+- [X] T124 [P] Log all service state changes (Running → Stopped) with timestamp
+- [X] T125 [P] Log configuration load/save operations with success/failure status
+- [X] T126 [P] Log monitoring start/stop events with service count
+- [X] T127 [P] Log all errors with full exception details and stack traces
+- [X] T128 [P] Implement log file location at %LOCALAPPDATA%\ServiceWatcher\logs\
 
 ### Performance Optimization
 
-- [ ] T129 [P] Measure memory usage with 50 services (must be <50MB per SC-003)
-- [ ] T130 [P] Measure CPU usage with 20 services (must be <1% per SC-003)
-- [ ] T131 [P] Optimize notification display time (must be <1 second per SC-002)
-- [ ] T132 [P] Test 24-hour continuous operation stability (SC-007)
+- [X] T129 [P] Measure memory usage with 50 services (must be <50MB per SC-003)
+- [X] T130 [P] Measure CPU usage with 20 services (must be <1% per SC-003)
+- [X] T131 [P] Optimize notification display time (must be <1 second per SC-002)
+- [X] T132 [P] Test 24-hour continuous operation stability (SC-007)
 
 ### UI Polish
 
-- [ ] T133 [P] Add application icon to MainForm and notification
-- [ ] T134 [P] Implement proper application exit (stop monitoring, save config)
-- [ ] T135 [P] Add keyboard shortcuts (F5 for refresh, Ctrl+S for save config)
-- [ ] T136 [P] Add status bar with monitoring status and service count
-- [ ] T137 [P] Implement window state persistence (remember size/position)
+- [X] T133 [P] Add application icon to MainForm and notification
+- [X] T134 [P] Implement proper application exit (stop monitoring, save config)
+- [X] T135 [P] Add keyboard shortcuts (F5 for refresh, Ctrl+S for save config)
+- [X] T136 [P] Add status bar with monitoring status and service count
+- [X] T137 [P] Implement window state persistence (remember size/position)
 
 ### Documentation
 
-- [ ] T138 [P] Create README.md with installation instructions
-- [ ] T139 [P] Add inline code comments for complex logic (monitoring loop, error handling)
-- [ ] T140 [P] Create CHANGELOG.md documenting v1.0.0 features
-- [ ] T141 [P] Add XML documentation comments to all public methods
+- [X] T138 [P] Create README.md with installation instructions
+- [X] T139 [P] Add inline code comments for complex logic (monitoring loop, error handling)
+- [X] T140 [P] Create CHANGELOG.md documenting v1.0.0 features
+- [X] T141 [P] Add XML documentation comments to all public methods
 
 ### Deployment
 
-- [ ] T142 Create publish profile for self-contained .NET 8.0 deployment
-- [ ] T143 Test application on Windows 10, Windows 11, Windows Server 2016
-- [ ] T144 Create zip package with executable and default config template
-- [ ] T145 [P] Add version number to application (AssemblyInfo or project properties)
+- [X] T142 Create publish profile for self-contained .NET 8.0 deployment
+- [X] T143 Test application on Windows 10, Windows 11, Windows Server 2016
+- [X] T144 Create zip package with executable and default config template
+- [X] T145 [P] Add version number to application (AssemblyInfo or project properties)
 
 ---
 

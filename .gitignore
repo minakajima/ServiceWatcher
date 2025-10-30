@@ -400,6 +400,8 @@ FodyWeavers.xsd
 # Runtime configuration (user-specific, not committed)
 config.json
 config.backup.json
+*.bak
+*.corrupted
 
 # Log files
 logs/

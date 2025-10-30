@@ -35,6 +35,32 @@ public partial class MainForm : Form
         UpdateStatusLabel("準備完了");
         btnStop.Enabled = false;
         RefreshServiceList();
+        
+        // Setup keyboard shortcuts
+        this.KeyPreview = true;
+        this.KeyDown += MainForm_KeyDown;
+        
+        // Load window state
+        LoadWindowState();
+    }
+
+    /// <summary>
+    /// Handles keyboard shortcuts.
+    /// </summary>
+    private void MainForm_KeyDown(object? sender, KeyEventArgs e)
+    {
+        // F5: Refresh service list
+        if (e.KeyCode == Keys.F5)
+        {
+            RefreshServiceList();
+            e.Handled = true;
+        }
+        // Escape: Stop monitoring if running
+        else if (e.KeyCode == Keys.Escape && _serviceMonitor.IsMonitoring)
+        {
+            btnStop_Click(this, EventArgs.Empty);
+            e.Handled = true;
+        }
     }
 
     /// <summary>
@@ -307,10 +333,111 @@ public partial class MainForm : Form
     }
 
     /// <summary>
+    /// Loads window state from config.
+    /// </summary>
+    private void LoadWindowState()
+    {
+        try
+        {
+            var configPath = SimpleConfigLoader.GetDefaultConfigPath();
+            if (!File.Exists(configPath))
+                return;
+
+            var json = File.ReadAllText(configPath);
+            using var doc = System.Text.Json.JsonDocument.Parse(json);
+            var root = doc.RootElement;
+
+            if (root.TryGetProperty("windowState", out var windowState))
+            {
+                if (windowState.TryGetProperty("x", out var x) &&
+                    windowState.TryGetProperty("y", out var y) &&
+                    windowState.TryGetProperty("width", out var width) &&
+                    windowState.TryGetProperty("height", out var height))
+                {
+                    var bounds = new Rectangle(x.GetInt32(), y.GetInt32(), width.GetInt32(), height.GetInt32());
+                    
+                    // Ensure window is visible on current screen(s)
+                    if (IsVisibleOnAnyScreen(bounds))
+                    {
+                        this.StartPosition = FormStartPosition.Manual;
+                        this.Location = bounds.Location;
+                        this.Size = bounds.Size;
+                    }
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogWarning(ex, "Failed to load window state");
+        }
+    }
+
+    /// <summary>
+    /// Checks if rectangle is visible on any screen.
+    /// </summary>
+    private bool IsVisibleOnAnyScreen(Rectangle bounds)
+    {
+        foreach (var screen in Screen.AllScreens)
+        {
+            if (screen.WorkingArea.IntersectsWith(bounds))
+                return true;
+        }
+        return false;
+    }
+
+    /// <summary>
+    /// Saves window state to config.
+    /// </summary>
+    private void SaveWindowState()
+    {
+        try
+        {
+            var configPath = SimpleConfigLoader.GetDefaultConfigPath();
+            if (!File.Exists(configPath))
+                return;
+
+            var json = File.ReadAllText(configPath);
+            var config = System.Text.Json.JsonSerializer.Deserialize<Dictionary<string, System.Text.Json.JsonElement>>(json);
+            
+            if (config == null)
+                return;
+
+            // Save current window position and size
+            var windowState = new
+            {
+                x = this.Location.X,
+                y = this.Location.Y,
+                width = this.Size.Width,
+                height = this.Size.Height
+            };
+
+            config["windowState"] = System.Text.Json.JsonSerializer.SerializeToElement(windowState);
+            config["lastModified"] = System.Text.Json.JsonSerializer.SerializeToElement(DateTime.Now);
+
+            var options = new System.Text.Json.JsonSerializerOptions
+            {
+                WriteIndented = true,
+                PropertyNamingPolicy = System.Text.Json.JsonNamingPolicy.CamelCase
+            };
+
+            var updatedJson = System.Text.Json.JsonSerializer.Serialize(config, options);
+            File.WriteAllText(configPath, updatedJson);
+
+            _logger.LogInformation("Saved window state");
+        }
+        catch (Exception ex)
+        {
+            _logger.LogWarning(ex, "Failed to save window state");
+        }
+    }
+
+    /// <summary>
     /// Handles form closing event.
     /// </summary>
     protected override async void OnFormClosing(FormClosingEventArgs e)
     {
+        SaveWindowState();
+        
         if (_serviceMonitor.IsMonitoring)
         {
             await _serviceMonitor.StopMonitoringAsync();
