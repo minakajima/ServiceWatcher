@@ -26,16 +26,16 @@
 
 **Purpose**: Initialize project structure and dependencies
 
-- [ ] T001 Create Visual Studio solution file at ServiceWatcher.sln
-- [ ] T002 [P] Create main project file ServiceWatcher.csproj with .NET 8.0 target
-- [ ] T003 [P] Create test project file tests/ServiceWatcher.Tests.csproj
-- [ ] T004 [P] Add NuGet packages: System.ServiceProcess, System.Text.Json to ServiceWatcher.csproj
-- [ ] T005 [P] Add NuGet packages: xUnit, Moq, Microsoft.NET.Test.Sdk to tests project
-- [ ] T006 [P] Create directory structure: Models/, Services/, UI/, Utils/ in project root
-- [ ] T007 [P] Create test directory structure: tests/Unit/, tests/Integration/
-- [ ] T008 [P] Add Microsoft.Extensions.Logging package for logging support
-- [ ] T009 Create default config.json template file in project root
-- [ ] T010 Configure project properties: Windows application, enable Windows Forms
+- [X] T001 Create Visual Studio solution file at ServiceWatcher.sln
+- [X] T002 [P] Create main project file ServiceWatcher.csproj with .NET 8.0 target
+- [X] T003 [P] Create test project file tests/ServiceWatcher.Tests.csproj
+- [X] T004 [P] Add NuGet packages: System.ServiceProcess, System.Text.Json to ServiceWatcher.csproj
+- [X] T005 [P] Add NuGet packages: xUnit, Moq, Microsoft.NET.Test.Sdk to tests project
+- [X] T006 [P] Create directory structure: Models/, Services/, UI/, Utils/ in project root
+- [X] T007 [P] Create test directory structure: tests/Unit/, tests/Integration/
+- [X] T008 [P] Add Microsoft.Extensions.Logging package for logging support
+- [X] T009 Create default config.json template file in project root
+- [X] T010 Configure project properties: Windows application, enable Windows Forms
 
 ---
 
