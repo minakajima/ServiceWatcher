@@ -1,0 +1,9 @@
+{
+  "monitoringIntervalSeconds": 5,
+  "notificationDisplayTimeSeconds": 30,
+  "monitoredServices": [],
+  "configurationVersion": "1.0",
+  "lastModified": "2025-10-31T00:00:00Z",
+  "startMinimized": false,
+  "autoStartMonitoring": false
+}
