@@ -97,21 +97,21 @@
 
 ### UI Layer - Notification Popup (US1)
 
-- [ ] T037 [P] [US1] Create NotificationForm class in UI/NotificationForm.cs (Windows Form)
-- [ ] T038 [US1] Design NotificationForm UI: icon, service name, message, timestamp, OK button
-- [ ] T039 [US1] Implement auto-close timer logic in NotificationForm (default 30 seconds)
-- [ ] T040 [US1] Position NotificationForm at bottom-right of screen with stacking support
-- [ ] T041 [US1] Style NotificationForm with light red background and warning icon
+- [X] T037 [P] [US1] Create NotificationForm class in UI/NotificationForm.cs (Windows Form) - Implemented in NotificationService
+- [X] T038 [US1] Design NotificationForm UI: icon, service name, message, timestamp, OK button - Simplified inline form
+- [X] T039 [US1] Implement auto-close timer logic in NotificationForm (default 30 seconds)
+- [X] T040 [US1] Position NotificationForm at bottom-right of screen with stacking support
+- [X] T041 [US1] Style NotificationForm with light red background and warning icon - Basic styling applied
 
 ### UI Layer - Main Window (US1 - Minimal)
 
-- [ ] T042 [P] [US1] Create MainForm class in UI/MainForm.cs (main application window)
-- [ ] T043 [US1] Design MainForm UI: status label, start/stop monitoring buttons, service list placeholder
-- [ ] T044 [US1] Implement Program.cs entry point with DI setup (logger, services)
-- [ ] T045 [US1] Wire ServiceMonitor.ServiceStatusChanged event to NotificationService.ShowNotification
-- [ ] T046 [US1] Implement Start Monitoring button click handler in MainForm.cs
-- [ ] T047 [US1] Implement Stop Monitoring button click handler in MainForm.cs
-- [ ] T048 [US1] Add status label updates on monitoring state changes in MainForm.cs
+- [X] T042 [P] [US1] Create MainForm class in UI/MainForm.cs (main application window)
+- [X] T043 [US1] Design MainForm UI: status label, start/stop monitoring buttons, service list placeholder
+- [X] T044 [US1] Implement Program.cs entry point with DI setup (logger, services)
+- [X] T045 [US1] Wire ServiceMonitor.ServiceStatusChanged event to NotificationService.ShowNotification
+- [X] T046 [US1] Implement Start Monitoring button click handler in MainForm.cs
+- [X] T047 [US1] Implement Stop Monitoring button click handler in MainForm.cs
+- [X] T048 [US1] Add status label updates on monitoring state changes in MainForm.cs
 
 ### Unit Tests (US1)
 
