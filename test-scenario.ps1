@@ -219,7 +219,7 @@ if ($Scenario -gt 0) {
             "Q" { Write-Host "`nGoodbye!" -ForegroundColor Cyan; exit }
             default {
                 if ($choice -match "^[2-6,9-10]$") {
-                    Write-Host "`nScenario $choice: Please refer to quickstart.md" -ForegroundColor Yellow
+                    Write-Host "`nScenario ${choice}: Please refer to quickstart.md" -ForegroundColor Yellow
                 } else {
                     Write-Host "`nInvalid choice!" -ForegroundColor Red
                 }
