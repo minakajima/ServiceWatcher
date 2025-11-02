@@ -168,9 +168,24 @@ dotnet test --filter FullyQualifiedName~ValidationResultTests
 #### カバレッジレポート付きで実行
 
 ```powershell
-# coverletパッケージを使用（別途インストール必要）
+# 1. coverletパッケージをテストプロジェクトに追加
+cd tests
+dotnet add package coverlet.collector
+
+# 2. カバレッジを収集してテスト実行
 dotnet test --collect:"XPlat Code Coverage"
+
+# 3. (オプション) ReportGeneratorでHTMLレポート生成
+dotnet tool install -g dotnet-reportgenerator-globaltool
+reportgenerator -reports:**/coverage.cobertura.xml -targetdir:coveragereport -reporttypes:Html
+
+# 4. (オプション) HTMLレポートを開く
+start coveragereport/index.html
 ```
+
+**カバレッジレポートの場所**:
+- Cobertura XML: `tests/TestResults/{guid}/coverage.cobertura.xml`
+- HTMLレポート (ReportGenerator使用時): `coveragereport/index.html`
 
 #### テスト構成
 
