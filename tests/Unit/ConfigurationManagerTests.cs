@@ -28,7 +28,8 @@ public class ConfigurationManagerTests : IDisposable
         _testConfigPath = Path.Combine(tempDir, "config.json");
         _testBackupPath = Path.Combine(tempDir, "config.backup.json");
         
-        _configManager = new ConfigurationManager(_mockLogger.Object);
+        // Use test-specific path instead of default %LocalAppData%
+        _configManager = new ConfigurationManager(_mockLogger.Object, _testConfigPath);
     }
 
     public void Dispose()
@@ -269,13 +270,25 @@ public class ConfigurationManagerTests : IDisposable
     [Fact]
     public async Task RestoreFromBackupAsync_RestoresBackup()
     {
-        // Arrange - Create backup
+        // Arrange - Create initial config (no backup yet)
+        var initialConfig = new ApplicationConfiguration
+        {
+            MonitoringIntervalSeconds = 5,
+            MonitoredServices = new List<MonitoredService>()
+        };
+        await _configManager.SaveAsync(initialConfig);
+        
+        // Save again to create backup
         var backupConfig = new ApplicationConfiguration
         {
             MonitoringIntervalSeconds = 10,
             MonitoredServices = new List<MonitoredService>()
         };
-        await _configManager.SaveAsync(backupConfig);
+        var saveResult = await _configManager.SaveAsync(backupConfig);
+        Assert.True(saveResult.IsSuccess, $"Failed to save config: {saveResult.Error}");
+        
+        // Verify backup file was created
+        Assert.True(File.Exists(_testBackupPath), $"Backup file not created at {_testBackupPath}");
 
         // Corrupt main config
         await File.WriteAllTextAsync(_testConfigPath, "invalid");
@@ -284,11 +297,12 @@ public class ConfigurationManagerTests : IDisposable
         var result = await _configManager.RestoreFromBackupAsync();
 
         // Assert
-        Assert.True(result.IsSuccess);
+        Assert.True(result.IsSuccess, $"RestoreFromBackupAsync failed: {result.Error}");
         
-        // Verify config is restored
+        // Verify config is restored (should be the initial config with interval=5)
         var loadResult = await _configManager.LoadAsync();
-        Assert.True(loadResult.IsSuccess);
+        Assert.True(loadResult.IsSuccess, $"LoadAsync after restore failed: {loadResult.Error}");
+        Assert.Equal(5, loadResult.Value.MonitoringIntervalSeconds);
     }
 
     [Fact]

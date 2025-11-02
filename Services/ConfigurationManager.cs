@@ -19,20 +19,47 @@ public class ConfigurationManager : IConfigurationManager
     private ApplicationConfiguration? _configuration;
 
     /// <summary>
-    /// Initializes a new instance of ConfigurationManager.
+    /// Initializes a new instance of ConfigurationManager with default paths.
     /// </summary>
     /// <param name="logger">Logger instance.</param>
     public ConfigurationManager(ILogger<ConfigurationManager> logger)
+        : this(logger, null)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of ConfigurationManager with custom configuration path.
+    /// </summary>
+    /// <param name="logger">Logger instance.</param>
+    /// <param name="configFilePath">Custom configuration file path. If null, uses default %LocalAppData%/ServiceWatcher/config.json.</param>
+    public ConfigurationManager(ILogger<ConfigurationManager> logger, string? configFilePath)
     {
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         
-        // Set file paths in %LocalAppData%/ServiceWatcher
-        var appDataPath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
-        var appFolder = Path.Combine(appDataPath, "ServiceWatcher");
-        Directory.CreateDirectory(appFolder);
-        
-        _configFilePath = Path.Combine(appFolder, "config.json");
-        _backupFilePath = Path.Combine(appFolder, "config.backup.json");
+        if (configFilePath != null)
+        {
+            // Use custom path for testing
+            _configFilePath = configFilePath;
+            var directory = Path.GetDirectoryName(_configFilePath);
+            if (!string.IsNullOrEmpty(directory))
+            {
+                Directory.CreateDirectory(directory);
+            }
+            _backupFilePath = Path.Combine(
+                Path.GetDirectoryName(_configFilePath) ?? "",
+                "config.backup.json"
+            );
+        }
+        else
+        {
+            // Use default paths in %LocalAppData%/ServiceWatcher
+            var appDataPath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+            var appFolder = Path.Combine(appDataPath, "ServiceWatcher");
+            Directory.CreateDirectory(appFolder);
+            
+            _configFilePath = Path.Combine(appFolder, "config.json");
+            _backupFilePath = Path.Combine(appFolder, "config.backup.json");
+        }
         
         // Configure JSON serialization
         _jsonOptions = new JsonSerializerOptions
