@@ -156,44 +156,44 @@
 
 ### Service Layer - Monitoring Extensions (US2)
 
-- [ ] T070 [US2] Implement AddServiceAsync method in Services/ServiceMonitor.cs
-- [ ] T071 [US2] Implement RemoveServiceAsync method in Services/ServiceMonitor.cs
-- [ ] T072 [US2] Implement RefreshMonitoredServicesAsync method in Services/ServiceMonitor.cs
-- [ ] T073 [US2] Implement GetServiceStatusesAsync method in Services/ServiceMonitor.cs
+- [x] T070 [US2] Implement AddServiceAsync method in Services/ServiceMonitor.cs
+- [x] T071 [US2] Implement RemoveServiceAsync method in Services/ServiceMonitor.cs
+- [x] T072 [US2] Implement RefreshMonitoredServicesAsync method in Services/ServiceMonitor.cs
+- [x] T073 [US2] Implement GetServiceStatusesAsync method in Services/ServiceMonitor.cs
 
 ### UI Layer - Service List Form (US2)
 
-- [ ] T074 [P] [US2] Create ServiceListForm class in UI/ServiceListForm.cs
-- [ ] T075 [US2] Design ServiceListForm UI: DataGridView for services, search box, add/remove buttons
-- [ ] T076 [US2] Implement LoadAllServices method using ServiceController.GetServices()
-- [ ] T077 [US2] Implement search/filter functionality by service name
-- [ ] T078 [US2] Implement Add Service button handler with ConfigurationManager.SaveAsync
-- [ ] T079 [US2] Implement Remove Service button handler with ConfigurationManager.SaveAsync
-- [ ] T080 [US2] Add monitored services list display (separate grid or highlight)
+- [x] T074 [P] [US2] Create ServiceListForm class in UI/ServiceListForm.cs
+- [x] T075 [US2] Design ServiceListForm UI: DataGridView for services, search box, add/remove buttons
+- [x] T076 [US2] Implement LoadAllServices method using ServiceController.GetServices()
+- [x] T077 [US2] Implement search/filter functionality by service name
+- [x] T078 [US2] Implement Add Service button handler with ConfigurationManager.SaveAsync
+- [x] T079 [US2] Implement Remove Service button handler with ConfigurationManager.SaveAsync
+- [x] T080 [US2] Add monitored services list display (separate grid or highlight)
 
 ### UI Layer - Main Window Integration (US2)
 
-- [ ] T081 [US2] Add "Add Service" button to MainForm.cs
-- [ ] T082 [US2] Implement Add Service button click handler to open ServiceListForm
-- [ ] T083 [US2] Add monitored services DataGridView to MainForm.cs
-- [ ] T084 [US2] Implement RefreshServiceList method to update monitored services display
-- [ ] T085 [US2] Wire ConfigurationManager.ConfigurationChanged event to RefreshServiceList
+- [x] T081 [US2] Add "Add Service" button to MainForm.cs
+- [x] T082 [US2] Implement Add Service button click handler to open ServiceListForm
+- [x] T083 [US2] Add monitored services DataGridView to MainForm.cs
+- [x] T084 [US2] Implement RefreshServiceList method to update monitored services display
+- [x] T085 [US2] Wire ConfigurationManager.ConfigurationChanged event to RefreshServiceList
 
 ### Unit Tests (US2)
 
-- [ ] T086 [P] [US2] Create ConfigurationManagerTests.cs in tests/Unit/
-- [ ] T087 [P] [US2] Test LoadAsync with valid JSON file
-- [ ] T088 [P] [US2] Test LoadAsync with invalid JSON (should load backup)
-- [ ] T089 [P] [US2] Test SaveAsync creates backup before saving
-- [ ] T090 [P] [US2] Test Validate with valid configuration (all checks pass)
-- [ ] T091 [P] [US2] Test Validate with invalid configuration (interval out of range, duplicate services, etc.)
-- [ ] T092 [P] [US2] Test CreateDefaultAsync generates valid default config
+- [x] T086 [P] [US2] Create ConfigurationManagerTests.cs in tests/Unit/
+- [x] T087 [P] [US2] Test LoadAsync with valid JSON file
+- [x] T088 [P] [US2] Test LoadAsync with invalid JSON (should load backup)
+- [x] T089 [P] [US2] Test SaveAsync creates backup before saving
+- [x] T090 [P] [US2] Test Validate with valid configuration (all checks pass)
+- [x] T091 [P] [US2] Test Validate with invalid configuration (interval out of range, duplicate services, etc.)
+- [x] T092 [P] [US2] Test CreateDefaultAsync generates valid default config
 
 ### Integration Tests (US2)
 
-- [ ] T093 [US2] Test full add service flow: UI ↁEConfigurationManager.SaveAsync ↁEfile written
-- [ ] T094 [US2] Test configuration reload without restart (FR-010)
-- [ ] T095 [US2] Test search performance with 100+ services (should complete in <3 seconds)
+- [x] T093 [US2] Test full add service flow: UI ↁEConfigurationManager.SaveAsync ↁEfile written
+- [x] T094 [US2] Test configuration reload without restart (FR-010)
+- [x] T095 [US2] Test search performance with 100+ services (should complete in <3 seconds)
 
 ---
 
@@ -205,49 +205,49 @@
 
 ### Configuration File Handling (US3)
 
-- [ ] T096 [P] [US3] Implement ReloadAsync method in Services/ConfigurationManager.cs
-- [ ] T097 [P] [US3] Implement RestoreFromBackupAsync method in Services/ConfigurationManager.cs
-- [ ] T098 [US3] Add file path resolution logic (%LOCALAPPDATA%\ServiceWatcher\config.json)
-- [ ] T099 [US3] Implement ConfigurationExists check method in Services/ConfigurationManager.cs
+- [x] T096 [P] [US3] Implement ReloadAsync method in Services/ConfigurationManager.cs
+- [x] T097 [P] [US3] Implement RestoreFromBackupAsync method in Services/ConfigurationManager.cs
+- [x] T098 [US3] Add file path resolution logic (%LOCALAPPDATA%\ServiceWatcher\config.json)
+- [x] T099 [US3] Implement ConfigurationExists check method in Services/ConfigurationManager.cs
 
 ### Configuration Validation (US3)
 
-- [ ] T100 [P] [US3] Add validation for MonitoringIntervalSeconds (1-3600 range)
-- [ ] T101 [P] [US3] Add validation for NotificationDisplayTimeSeconds (0-300 range)
-- [ ] T102 [P] [US3] Add validation for max services count (50 max per constitution)
-- [ ] T103 [P] [US3] Add validation for duplicate service names detection
-- [ ] T104 [P] [US3] Add validation for service name max length (256 chars)
+- [x] T100 [P] [US3] Add validation for MonitoringIntervalSeconds (1-3600 range)
+- [x] T101 [P] [US3] Add validation for NotificationDisplayTimeSeconds (0-300 range)
+- [x] T102 [P] [US3] Add validation for max services count (50 max per constitution)
+- [x] T103 [P] [US3] Add validation for duplicate service names detection
+- [x] T104 [P] [US3] Add validation for service name max length (256 chars)
 
 ### UI Layer - Settings (US3)
 
-- [ ] T105 [P] [US3] Add Settings menu item to MainForm.cs
-- [ ] T106 [US3] Create SettingsForm class in UI/SettingsForm.cs (optional - can edit config directly)
-- [ ] T107 [US3] Add monitoring interval NumericUpDown control to SettingsForm
-- [ ] T108 [US3] Add notification display time NumericUpDown control to SettingsForm
-- [ ] T109 [US3] Implement Save Settings button handler with validation
-- [ ] T110 [US3] Add StartMinimized checkbox to SettingsForm
-- [ ] T111 [US3] Add AutoStartMonitoring checkbox to SettingsForm
+- [x] T105 [P] [US3] Add Settings menu item to MainForm.cs
+- [x] T106 [US3] Create SettingsForm class in UI/SettingsForm.cs (optional - can edit config directly)
+- [x] T107 [US3] Add monitoring interval NumericUpDown control to SettingsForm
+- [x] T108 [US3] Add notification display time NumericUpDown control to SettingsForm
+- [x] T109 [US3] Implement Save Settings button handler with validation
+- [x] T110 [US3] Add StartMinimized checkbox to SettingsForm
+- [x] T111 [US3] Add AutoStartMonitoring checkbox to SettingsForm
 
 ### Error Handling (US3)
 
-- [ ] T112 [US3] Implement error handling for corrupted config.json (load backup or default)
-- [ ] T113 [US3] Implement error handling for read-only config file (show error dialog)
-- [ ] T114 [US3] Implement error handling for missing config directory (create directory)
-- [ ] T115 [US3] Add user-friendly error messages for all configuration errors
+- [x] T112 [US3] Implement error handling for corrupted config.json (load backup or default)
+- [x] T113 [US3] Implement error handling for read-only config file (show error dialog)
+- [x] T114 [US3] Implement error handling for missing config directory (create directory)
+- [x] T115 [US3] Add user-friendly error messages for all configuration errors
 
 ### Unit Tests (US3)
 
-- [ ] T116 [P] [US3] Test ReloadAsync discards in-memory changes and reloads from file
-- [ ] T117 [P] [US3] Test RestoreFromBackupAsync successfully restores from backup
-- [ ] T118 [P] [US3] Test error handling when both config and backup are corrupted (use default)
-- [ ] T119 [P] [US3] Test validation rules: interval out of range, max services exceeded, etc.
-- [ ] T120 [P] [US3] Test configuration file location (%LOCALAPPDATA%)
+- [x] T116 [P] [US3] Test ReloadAsync discards in-memory changes and reloads from file
+- [x] T117 [P] [US3] Test RestoreFromBackupAsync successfully restores from backup
+- [x] T118 [P] [US3] Test error handling when both config and backup are corrupted (use default)
+- [x] T119 [P] [US3] Test validation rules: interval out of range, max services exceeded, etc.
+- [x] T120 [P] [US3] Test configuration file location (%LOCALAPPDATA%)
 
 ### Integration Tests (US3)
 
-- [ ] T121 [US3] Test manual config.json edit ↁEapp restart ↁEchanges loaded (FR-010 validation)
-- [ ] T122 [US3] Test config portability: copy config to different machine ↁEsame behavior
-- [ ] T123 [US3] Test first-run scenario: no config exists ↁEdefault created automatically (FR-009)
+- [x] T121 [US3] Test manual config.json edit ↁEapp restart ↁEchanges loaded (FR-010 validation)
+- [x] T122 [US3] Test config portability: copy config to different machine ↁEsame behavior
+- [x] T123 [US3] Test first-run scenario: no config exists ↁEdefault created automatically (FR-009)
 
 ---
 
@@ -439,4 +439,10 @@ All tasks align with the 7 constitution principles:
 6. **Iterate**: Add US2 and US3 incrementally
 
 **Ready to implement**: All tasks have clear file paths and acceptance criteria. Begin with T001! 🚀
+
+
+
+
+
+
 
