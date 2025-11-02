@@ -1,4 +1,4 @@
-# Tasks: Windowsサービス監視システム
+# Tasks: Windowsサービス監視シスチE��
 
 **Feature**: 001-service-monitor  
 **Input**: Design documents from `/specs/001-service-monitor/`  
@@ -17,7 +17,7 @@
 ## Implementation Strategy
 
 **MVP Scope**: User Story 1 (US1) only - Core monitoring and notification
-**Incremental Delivery**: US1 → US2 → US3 (each story is independently testable)
+**Incremental Delivery**: US1 ↁEUS2 ↁEUS3 (each story is independently testable)
 **Technology**: C# 12 / .NET 8.0, Windows Forms, System.ServiceProcess
 
 ---
@@ -64,7 +64,7 @@
 ## Phase 3: User Story 1 - Service Monitoring and Notification (P1)
 
 **Goal**: Monitor registered services and show popup notification when service stops  
-**Independent Test**: Manually stop a monitored service → popup appears within 1 second  
+**Independent Test**: Manually stop a monitored service ↁEpopup appears within 1 second  
 **Success Criteria**: SC-002 (notification within 1 second), SC-003 (resource usage), SC-007 (24h stability)
 
 ### Data Models (US1)
@@ -118,7 +118,7 @@
 - [X] T049 [P] [US1] Create ServiceMonitorTests.cs in tests/Unit/ with basic test structure
 - [X] T050 [P] [US1] Test ServiceMonitor.StartMonitoringAsync starts timer correctly
 - [X] T051 [P] [US1] Test ServiceMonitor.StopMonitoringAsync cancels timer correctly
-- [X] T052 [P] [US1] Test service status change detection (Running → Stopped) raises event
+- [X] T052 [P] [US1] Test service status change detection (Running ↁEStopped) raises event
 - [X] T053 [P] [US1] Test NotificationService.ShowNotification creates form correctly
 - [X] T054 [P] [US1] Test NotificationService.CloseAllNotifications closes all forms
 
@@ -134,25 +134,25 @@
 ## Phase 4: User Story 2 - Service List Display and Selection (P2)
 
 **Goal**: Display all Windows services and allow user to select/register for monitoring  
-**Independent Test**: Open service list → see all services → register one → saved to config  
+**Independent Test**: Open service list ↁEsee all services ↁEregister one ↁEsaved to config  
 **Success Criteria**: SC-001 (register within 30 seconds), SC-005 (search within 3 seconds)
 
 ### Data Models (US2)
 
-- [ ] T059 [P] [US2] Create ApplicationConfiguration class in Models/ApplicationConfiguration.cs
-- [ ] T060 [P] [US2] Add MonitoredServices list property to ApplicationConfiguration
+- [x] T059 [P] [US2] Create ApplicationConfiguration class in Models/ApplicationConfiguration.cs
+- [x] T060 [P] [US2] Add MonitoredServices list property to ApplicationConfiguration
 
 ### Service Layer - Configuration (US2)
 
-- [ ] T061 [P] [US2] Create IConfigurationManager interface in Services/IConfigurationManager.cs
-- [ ] T062 [US2] Implement ConfigurationManager class constructor in Services/ConfigurationManager.cs
-- [ ] T063 [US2] Implement LoadAsync method with JSON deserialization in Services/ConfigurationManager.cs
-- [ ] T064 [US2] Implement SaveAsync method with backup creation in Services/ConfigurationManager.cs
-- [ ] T065 [US2] Implement CreateDefaultAsync method for first-run config in Services/ConfigurationManager.cs
-- [ ] T066 [US2] Implement Validate method with ConfigurationValidator in Services/ConfigurationManager.cs
-- [ ] T067 [US2] Create ConfigurationValidator class with all validation rules in Services/ConfigurationValidator.cs
-- [ ] T068 [US2] Implement TryLoadBackupAsync helper for corrupted config recovery
-- [ ] T069 [US2] Add ConfigurationChanged event in Services/ConfigurationManager.cs
+- [x] T061 [P] [US2] Create IConfigurationManager interface in Services/IConfigurationManager.cs
+- [x] T062 [US2] Implement ConfigurationManager class constructor in Services/ConfigurationManager.cs
+- [x] T063 [US2] Implement LoadAsync method with JSON deserialization in Services/ConfigurationManager.cs
+- [x] T064 [US2] Implement SaveAsync method with backup creation in Services/ConfigurationManager.cs
+- [x] T065 [US2] Implement CreateDefaultAsync method for first-run config in Services/ConfigurationManager.cs
+- [x] T066 [US2] Implement Validate method with ConfigurationValidator in Services/ConfigurationManager.cs
+- [x] T067 [US2] Create ConfigurationValidator class with all validation rules in Services/ConfigurationValidator.cs
+- [x] T068 [US2] Implement TryLoadBackupAsync helper for corrupted config recovery
+- [x] T069 [US2] Add ConfigurationChanged event in Services/ConfigurationManager.cs
 
 ### Service Layer - Monitoring Extensions (US2)
 
@@ -191,7 +191,7 @@
 
 ### Integration Tests (US2)
 
-- [ ] T093 [US2] Test full add service flow: UI → ConfigurationManager.SaveAsync → file written
+- [ ] T093 [US2] Test full add service flow: UI ↁEConfigurationManager.SaveAsync ↁEfile written
 - [ ] T094 [US2] Test configuration reload without restart (FR-010)
 - [ ] T095 [US2] Test search performance with 100+ services (should complete in <3 seconds)
 
@@ -200,7 +200,7 @@
 ## Phase 5: User Story 3 - Configuration File Management (P3)
 
 **Goal**: Persist settings to JSON file with backup/restore capability  
-**Independent Test**: Edit config.json → restart app → settings loaded correctly  
+**Independent Test**: Edit config.json ↁErestart app ↁEsettings loaded correctly  
 **Success Criteria**: SC-004 (configuration portability 100%)
 
 ### Configuration File Handling (US3)
@@ -245,9 +245,9 @@
 
 ### Integration Tests (US3)
 
-- [ ] T121 [US3] Test manual config.json edit → app restart → changes loaded (FR-010 validation)
-- [ ] T122 [US3] Test config portability: copy config to different machine → same behavior
-- [ ] T123 [US3] Test first-run scenario: no config exists → default created automatically (FR-009)
+- [ ] T121 [US3] Test manual config.json edit ↁEapp restart ↁEchanges loaded (FR-010 validation)
+- [ ] T122 [US3] Test config portability: copy config to different machine ↁEsame behavior
+- [ ] T123 [US3] Test first-run scenario: no config exists ↁEdefault created automatically (FR-009)
 
 ---
 
@@ -257,7 +257,7 @@
 
 ### Logging Implementation
 
-- [X] T124 [P] Log all service state changes (Running → Stopped) with timestamp
+- [X] T124 [P] Log all service state changes (Running ↁEStopped) with timestamp
 - [X] T125 [P] Log configuration load/save operations with success/failure status
 - [X] T126 [P] Log monitoring start/stop events with service count
 - [X] T127 [P] Log all errors with full exception details and stack traces
@@ -335,27 +335,23 @@ Each phase has **[P]** tagged tasks that can be executed concurrently:
 ### Story Completion Order
 
 ```
-Phase 1 (Setup) → Phase 2 (Foundational)
-                      ↓
-              Phase 3 (US1 - P1) ← MVP Milestone
-                      ↓
-              Phase 4 (US2 - P2)
-                      ↓
-              Phase 5 (US3 - P3)
-                      ↓
-              Phase 6 (Polish)
+Phase 1 (Setup) ↁEPhase 2 (Foundational)
+                      ↁE              Phase 3 (US1 - P1) ↁEMVP Milestone
+                      ↁE              Phase 4 (US2 - P2)
+                      ↁE              Phase 5 (US3 - P3)
+                      ↁE              Phase 6 (Polish)
 ```
 
-**Independent Stories**: US1, US2, US3 are designed to be independently testable. However, for best user experience, implement in priority order (P1 → P2 → P3).
+**Independent Stories**: US1, US2, US3 are designed to be independently testable. However, for best user experience, implement in priority order (P1 ↁEP2 ↁEP3).
 
 ### Task Dependencies Within Each Story
 
 **US1 Dependencies**:
-- T018-T020 (Models) → T021-T030 (ServiceMonitor) → T042-T048 (MainForm)
-- T031-T036 (INotificationService) → T037-T041 (NotificationForm) → T045 (Event wiring)
+- T018-T020 (Models) ↁET021-T030 (ServiceMonitor) ↁET042-T048 (MainForm)
+- T031-T036 (INotificationService) ↁET037-T041 (NotificationForm) ↁET045 (Event wiring)
 
 **US2 Dependencies**:
-- T059-T060 (Config model) → T061-T069 (ConfigurationManager) → T074-T080 (ServiceListForm)
+- T059-T060 (Config model) ↁET061-T069 (ConfigurationManager) ↁET074-T080 (ServiceListForm)
 - T070-T073 (ServiceMonitor extensions) requires T021-T022 (ServiceMonitor base)
 
 **US3 Dependencies**:
@@ -399,37 +395,37 @@ Use `quickstart.md` for manual testing scenarios:
 **Scope**: User Story 1 only (Tasks T001-T058)
 
 **What you get**:
-- ✅ Monitor services and show popup notifications
-- ✅ Start/Stop monitoring manually
-- ✅ Core error handling (service not found, access denied)
-- ✅ Basic logging
-- ✅ Unit and integration tests for monitoring logic
+- ✁EMonitor services and show popup notifications
+- ✁EStart/Stop monitoring manually
+- ✁ECore error handling (service not found, access denied)
+- ✁EBasic logging
+- ✁EUnit and integration tests for monitoring logic
 
 **What's missing** (add with US2/US3):
-- ❌ UI to add/remove services (must edit config.json manually)
-- ❌ Service list display and search
-- ❌ Settings UI (must edit config.json manually)
-- ❌ Configuration validation UI
+- ❁EUI to add/remove services (must edit config.json manually)
+- ❁EService list display and search
+- ❁ESettings UI (must edit config.json manually)
+- ❁EConfiguration validation UI
 
 **MVP is production-ready** for users comfortable with manual config editing.
 
 ### Incremental Delivery
 
-1. **Iteration 1** (MVP): Tasks T001-T058 → Deploy as v0.1.0-alpha
-2. **Iteration 2** (US2): Tasks T059-T095 → Deploy as v0.2.0-beta
-3. **Iteration 3** (US3): Tasks T096-T123 → Deploy as v1.0.0-rc1
-4. **Iteration 4** (Polish): Tasks T124-T145 → Deploy as v1.0.0
+1. **Iteration 1** (MVP): Tasks T001-T058 ↁEDeploy as v0.1.0-alpha
+2. **Iteration 2** (US2): Tasks T059-T095 ↁEDeploy as v0.2.0-beta
+3. **Iteration 3** (US3): Tasks T096-T123 ↁEDeploy as v1.0.0-rc1
+4. **Iteration 4** (Polish): Tasks T124-T145 ↁEDeploy as v1.0.0
 
 ### Constitution Compliance
 
 All tasks align with the 7 constitution principles:
-- ✅ **I. Windows-Native**: Uses ServiceController API
-- ✅ **II. User Notification First**: US1 core focus
-- ✅ **III. Minimal Resource**: Performance tasks T129-T132
-- ✅ **IV. Configuration-Driven**: US3 entire focus
-- ✅ **V. Testability**: 70 unit/integration tests planned
-- ✅ **VI. Git Management**: Each task → one commit
-- ✅ **VII. Feature-Driven Design**: Organized by user story with clear class boundaries
+- ✁E**I. Windows-Native**: Uses ServiceController API
+- ✁E**II. User Notification First**: US1 core focus
+- ✁E**III. Minimal Resource**: Performance tasks T129-T132
+- ✁E**IV. Configuration-Driven**: US3 entire focus
+- ✁E**V. Testability**: 70 unit/integration tests planned
+- ✁E**VI. Git Management**: Each task ↁEone commit
+- ✁E**VII. Feature-Driven Design**: Organized by user story with clear class boundaries
 
 ---
 
@@ -443,3 +439,4 @@ All tasks align with the 7 constitution principles:
 6. **Iterate**: Add US2 and US3 incrementally
 
 **Ready to implement**: All tasks have clear file paths and acceptance criteria. Begin with T001! 🚀
+

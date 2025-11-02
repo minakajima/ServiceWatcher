@@ -16,7 +16,8 @@ static class Program
         
         // To customize application configuration such as set high DPI settings or default font,
         // see https://aka.ms/applicationconfiguration.
-        ApplicationConfiguration.Initialize();
+        // Note: ApplicationConfiguration.Initialize() is not available in .NET 8
+        // Use Application.SetHighDpiMode() if needed
         Application.Run(new MainForm());
     }    
 }
