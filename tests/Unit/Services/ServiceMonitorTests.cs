@@ -1,0 +1,152 @@
+using System;
+using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
+using Moq;
+using ServiceWatcher.Models;
+using ServiceWatcher.Services;
+using ServiceWatcher.Utils;
+using Xunit;
+
+namespace ServiceWatcher.Tests.Unit.Services;
+
+public class ServiceMonitorTests
+{
+    private static async Task<bool> WaitForAsync(Func<bool> condition, int timeoutMs = 1000, int pollIntervalMs = 25)
+    {
+        var sw = System.Diagnostics.Stopwatch.StartNew();
+        while (sw.ElapsedMilliseconds < timeoutMs)
+        {
+            if (condition()) return true;
+            await Task.Delay(pollIntervalMs);
+        }
+        return condition();
+    }
+    private class TestServiceMonitor : ServiceMonitor
+    {
+        private readonly Queue<ServiceStatus> _statusSequence;
+        public List<ServiceStatusChange> Changes { get; } = new();
+        public List<MonitoringErrorEventArgs> Errors { get; } = new();
+
+        public TestServiceMonitor(ILogger<ServiceMonitor> logger, IEnumerable<ServiceStatus> statusSequence)
+            : base(logger)
+        {
+            _statusSequence = new Queue<ServiceStatus>(statusSequence);
+            ServiceStatusChanged += (_, e) => Changes.Add(e.StatusChange);
+            MonitoringError += (_, e) => Errors.Add(e);
+        }
+
+    public override async Task<ServiceStatus> GetCurrentStatusAsync(string serviceName)
+        {
+            await Task.Yield();
+            if (_statusSequence.Count == 0)
+            {
+                return ServiceStatus.Running; // default
+            }
+            return _statusSequence.Dequeue();
+        }
+
+    public override async Task CheckAllServicesAsync()
+        {
+            await base.CheckAllServicesAsync();
+        }
+    }
+
+    private MonitoredService CreateService(string name) => new()
+    {
+        ServiceName = name,
+        DisplayName = name + "Display",
+        NotificationEnabled = true,
+        LastKnownStatus = ServiceStatus.Running,
+        IsAvailable = true
+    };
+
+    [Fact]
+    public async Task StartMonitoring_NoServices_Fails()
+    {
+        var logger = new Mock<ILogger<ServiceMonitor>>();
+        var monitor = new TestServiceMonitor(logger.Object, new[] { ServiceStatus.Running });
+        var result = await monitor.StartMonitoringAsync();
+        Assert.False(result.IsSuccess);
+        Assert.Equal("No services configured for monitoring", result.Error);
+    }
+
+    [Fact]
+    public async Task AddService_Valid_AddsSuccessfully()
+    {
+        var logger = new Mock<ILogger<ServiceMonitor>>();
+        var monitor = new TestServiceMonitor(logger.Object, new[] { ServiceStatus.Running });
+        var service = CreateService("svc1");
+        var addResult = await monitor.AddServiceAsync(service);
+        Assert.True(addResult.IsSuccess);
+        Assert.Single(monitor.MonitoredServices);
+    }
+
+    [Fact]
+    public async Task AddService_Duplicate_Fails()
+    {
+        var logger = new Mock<ILogger<ServiceMonitor>>();
+        var monitor = new TestServiceMonitor(logger.Object, new[] { ServiceStatus.Running });
+        var service = CreateService("svc1");
+        await monitor.AddServiceAsync(service);
+        var second = await monitor.AddServiceAsync(service);
+        Assert.False(second.IsSuccess);
+        Assert.Equal("Service 'svc1' is already being monitored", second.Error);
+    }
+
+    [Fact]
+    public async Task StatusChange_EventRaised_OnTransition()
+    {
+        var logger = new Mock<ILogger<ServiceMonitor>>();
+        // Sequence: initial Running (known), then Stopped triggers change
+        var monitor = new TestServiceMonitor(logger.Object, new[] { ServiceStatus.Running, ServiceStatus.Stopped });
+        await monitor.AddServiceAsync(CreateService("svc1"));
+        var startResult = await monitor.StartMonitoringAsync();
+        Assert.True(startResult.IsSuccess);
+
+        // First poll executed by StartMonitoringAsync (initial status refresh)
+        // Manually invoke second poll to cause transition
+        await monitor.CheckAllServicesAsync();
+        // Wait for async event handler to record the change
+        var received = await WaitForAsync(() => monitor.Changes.Count == 1, 500);
+        Assert.True(received, "ServiceStatusChanged event was not raised within timeout");
+        var change = monitor.Changes.Single();
+        Assert.Equal(ServiceStatus.Running, change.PreviousStatus);
+        Assert.Equal(ServiceStatus.Stopped, change.CurrentStatus);
+        Assert.Equal("svc1", change.ServiceName);
+    }
+
+    [Fact]
+    public async Task RemoveService_RemovesSuccessfully()
+    {
+        var logger = new Mock<ILogger<ServiceMonitor>>();
+        var monitor = new TestServiceMonitor(logger.Object, new[] { ServiceStatus.Running });
+        await monitor.AddServiceAsync(CreateService("svc1"));
+        var removeResult = await monitor.RemoveServiceAsync("svc1");
+        Assert.True(removeResult.IsSuccess);
+        Assert.Empty(monitor.MonitoredServices);
+    }
+
+    [Theory]
+    [InlineData(0)]
+    [InlineData(3601)]
+    public async Task UpdateMonitoringInterval_Invalid_Fails(int interval)
+    {
+        var logger = new Mock<ILogger<ServiceMonitor>>();
+        var monitor = new TestServiceMonitor(logger.Object, new[] { ServiceStatus.Running });
+        var result = await monitor.UpdateMonitoringIntervalAsync(interval);
+        Assert.False(result.IsSuccess);
+    }
+
+    [Theory]
+    [InlineData(1)]
+    [InlineData(3600)]
+    public async Task UpdateMonitoringInterval_Valid_Succeeds(int interval)
+    {
+        var logger = new Mock<ILogger<ServiceMonitor>>();
+        var monitor = new TestServiceMonitor(logger.Object, new[] { ServiceStatus.Running });
+        var result = await monitor.UpdateMonitoringIntervalAsync(interval);
+        Assert.True(result.IsSuccess);
+    }
+}
