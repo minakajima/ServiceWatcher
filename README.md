@@ -132,6 +132,73 @@ dotnet run
 dotnet publish -c Release -r win-x64 --self-contained
 ```
 
+### テスト実行
+
+#### すべてのテストを実行
+
+```powershell
+# テストプロジェクトのビルドと実行
+dotnet test
+
+# または、テストプロジェクトを指定して実行
+dotnet test tests\ServiceWatcher.Tests.csproj
+```
+
+#### 詳細な出力で実行
+
+```powershell
+# 通常の詳細レベル
+dotnet test --verbosity normal
+
+# 最小限の出力
+dotnet test --verbosity minimal
+
+# 詳細な出力
+dotnet test --verbosity detailed
+```
+
+#### 特定のテストクラスのみ実行
+
+```powershell
+# フィルターを使用
+dotnet test --filter FullyQualifiedName~MonitoredServiceTests
+dotnet test --filter FullyQualifiedName~ValidationResultTests
+```
+
+#### カバレッジレポート付きで実行
+
+```powershell
+# 1. coverletパッケージをテストプロジェクトに追加
+cd tests
+dotnet add package coverlet.collector
+
+# 2. カバレッジを収集してテスト実行
+dotnet test --collect:"XPlat Code Coverage"
+
+# 3. (オプション) ReportGeneratorでHTMLレポート生成
+dotnet tool install -g dotnet-reportgenerator-globaltool
+reportgenerator -reports:**/coverage.cobertura.xml -targetdir:coveragereport -reporttypes:Html
+
+# 4. (オプション) HTMLレポートを開く
+start coveragereport/index.html
+```
+
+**カバレッジレポートの場所**:
+- Cobertura XML: `tests/TestResults/{guid}/coverage.cobertura.xml`
+- HTMLレポート (ReportGenerator使用時): `coveragereport/index.html`
+
+#### テスト構成
+
+テストプロジェクトには以下のテストが含まれています:
+
+- **MonitoredServiceTests** (10テスト): MonitoredServiceクラスの検証ロジックテスト
+- **ServiceStatusChangeTests** (4テスト, 14実行): サービス状態変更イベントのテスト
+- **ServiceStatusTests** (2テスト, 5実行): ServiceStatus列挙型のテスト
+- **ResultTests** (10テスト, 14実行): Result<T>パターンのテスト
+- **ValidationResultTests** (12テスト, 18実行): ValidationResultクラスのテスト
+
+**合計**: 38テストメソッド、51テスト実行
+
 ### アーキテクチャ
 
 ```

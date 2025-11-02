@@ -149,6 +149,11 @@ coverage*.info
 *.coverage
 *.coveragexml
 
+# Code coverage reports
+TestResults/
+coveragereport/
+*.cobertura.xml
+
 # NCrunch
 _NCrunch_*
 .*crunch*.local.xml
@@ -410,3 +415,15 @@ logs/
 # Temporary files
 *.tmp
 temp/
+
+# Test coverage reports (already covered above, but for clarity)
+# TestResults/ - covered above
+# coveragereport/ - covered above
+
+# User data and settings
+*.user.json
+user-settings.json
+
+# Performance test results
+performance-results/
+benchmark-results/

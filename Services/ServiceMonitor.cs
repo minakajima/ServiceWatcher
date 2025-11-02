@@ -12,6 +12,7 @@ namespace ServiceWatcher.Services;
 public class ServiceMonitor : IServiceMonitor
 {
     private readonly ILogger<ServiceMonitor> _logger;
+    private readonly IConfigurationManager? _configurationManager;
     private readonly List<MonitoredService> _monitoredServices;
     private readonly object _lock = new object();
     private System.Threading.Timer? _monitoringTimer;
@@ -48,9 +49,10 @@ public class ServiceMonitor : IServiceMonitor
         }
     }
 
-    public ServiceMonitor(ILogger<ServiceMonitor> logger)
+    public ServiceMonitor(ILogger<ServiceMonitor> logger, IConfigurationManager? configurationManager = null)
     {
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+        _configurationManager = configurationManager;
         _monitoredServices = new List<MonitoredService>();
     }
 
@@ -235,9 +237,50 @@ public class ServiceMonitor : IServiceMonitor
     /// </summary>
     public async Task<Result<int>> RefreshMonitoredServicesAsync()
     {
-        // This will be implemented when ConfigurationManager is available (US2)
-        await Task.CompletedTask;
-        return Result<int>.Success(_monitoredServices.Count);
+        try
+        {
+            if (_configurationManager == null)
+            {
+                _logger.LogWarning("ConfigurationManager not available, cannot refresh services");
+                return Result<int>.Success(_monitoredServices.Count);
+            }
+
+            // Load configuration
+            var loadResult = await _configurationManager.LoadAsync();
+            if (!loadResult.IsSuccess)
+            {
+                _logger.LogError($"Failed to load configuration: {loadResult.Error}");
+                return Result<int>.Failure(loadResult.Error!);
+            }
+
+            var config = loadResult.Value;
+            
+            lock (_lock)
+            {
+                // Clear existing services
+                _monitoredServices.Clear();
+                
+                // Add services from configuration
+                if (config.MonitoredServices != null)
+                {
+                    _monitoredServices.AddRange(config.MonitoredServices);
+                }
+                
+                // Update monitoring interval
+                if (config.MonitoringIntervalSeconds > 0)
+                {
+                    _monitoringIntervalSeconds = config.MonitoringIntervalSeconds;
+                }
+            }
+
+            _logger.LogInformation($"Refreshed monitoring list: {_monitoredServices.Count} services loaded");
+            return Result<int>.Success(_monitoredServices.Count);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Failed to refresh monitored services");
+            return Result<int>.Failure($"設定の再読み込みに失敗: {ex.Message}");
+        }
     }
 
     /// <summary>
