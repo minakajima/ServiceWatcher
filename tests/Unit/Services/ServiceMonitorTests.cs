@@ -37,7 +37,7 @@ public class ServiceMonitorTests
             MonitoringError += (_, e) => Errors.Add(e);
         }
 
-    public override async Task<ServiceStatus> GetCurrentStatusAsync(string serviceName)
+    internal override async Task<ServiceStatus> GetCurrentStatusAsync(string serviceName)
         {
             await Task.Yield();
             if (_statusSequence.Count == 0)
@@ -47,7 +47,7 @@ public class ServiceMonitorTests
             return _statusSequence.Dequeue();
         }
 
-    public override async Task CheckAllServicesAsync()
+    internal override async Task CheckAllServicesAsync()
         {
             await base.CheckAllServicesAsync();
         }

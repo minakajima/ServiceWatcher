@@ -68,4 +68,37 @@ public class ConfigurationManagerErrorPathTests
         var restore = await mgr.RestoreFromBackupAsync();
         Assert.False(restore.IsSuccess);
     }
+
+    [Fact]
+    public async Task RestoreFromBackupAsync_ValidBackup_Succeeds()
+    {
+        var dir = CreateTempDir();
+        var primaryPath = Path.Combine(dir, "config.json");
+        var logger = new Mock<ILogger<ConfigurationManager>>();
+        var mgr = new ConfigurationManager(logger.Object, primaryPath);
+
+        // First save a valid config to create backup
+        var config = new ApplicationConfiguration
+        {
+            MonitoringIntervalSeconds = 5,
+            NotificationDisplayTimeSeconds = 30,
+            MonitoredServices = new() { new MonitoredService { ServiceName = "svcX", DisplayName = "Service X", NotificationEnabled = true, IsAvailable = true } }
+        };
+        var save1 = await mgr.SaveAsync(config);
+        Assert.True(save1.IsSuccess);
+
+        // Modify current config and save again so backup has previous state
+        config.MonitoringIntervalSeconds = 10;
+        var save2 = await mgr.SaveAsync(config);
+        Assert.True(save2.IsSuccess);
+
+        // Now restore from backup (which holds interval=5)
+        var restore = await mgr.RestoreFromBackupAsync();
+        Assert.True(restore.IsSuccess);
+
+        var reloaded = await mgr.LoadAsync();
+        Assert.True(reloaded.IsSuccess);
+    // Backupは interval=5 を保持し restore後に現在値が5へ戻ることを期待
+    Assert.Equal(5, reloaded.Value.MonitoringIntervalSeconds);
+    }
 }

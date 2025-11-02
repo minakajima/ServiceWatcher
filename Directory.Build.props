@@ -1,0 +1,13 @@
+<Project>
+  <ItemGroup>
+    <!-- Coverlet exclusion: generated code, WinForms UI, program entry -->
+    <CoverletExclude Include="[ServiceWatcher]ServiceWatcher.Program" />
+    <CoverletExclude Include="[ServiceWatcher]*MainForm" />
+    <CoverletExclude Include="[ServiceWatcher]*ServiceListForm" />
+    <CoverletExclude Include="[ServiceWatcher]*SettingsForm" />
+    <CoverletExclude Include="[ServiceWatcher]*ApplicationConfigurationGenerator*" />
+    <!-- Exclude designer/obj and any auto-generated sources -->
+    <CoverletExclude Include="[ServiceWatcher]ServiceWatcher.*Designer*" />
+    <CoverletExclude Include="[ServiceWatcher]System.Windows.Forms.*" />
+  </ItemGroup>
+</Project>

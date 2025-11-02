@@ -139,7 +139,7 @@ public class ServiceMonitor : IServiceMonitor
     /// Checks all monitored services and raises events for status changes.
     /// Made protected internal virtual for testability (override polling behavior in tests).
     /// </summary>
-    public virtual async Task CheckAllServicesAsync()
+    internal virtual async Task CheckAllServicesAsync()
     {
         if (_cancellationTokenSource?.Token.IsCancellationRequested == true)
         {
@@ -214,7 +214,7 @@ public class ServiceMonitor : IServiceMonitor
     /// Gets the current status of a specific service.
     /// Made protected internal virtual for testability (override service status resolution in tests).
     /// </summary>
-    public virtual async Task<ServiceStatus> GetCurrentStatusAsync(string serviceName)
+    internal virtual async Task<ServiceStatus> GetCurrentStatusAsync(string serviceName)
     {
         return await Task.Run(() =>
         {

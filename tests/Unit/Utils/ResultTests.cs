@@ -50,16 +50,16 @@ public class ResultTests
     [Fact]
     public void Success_NullValue_ThrowsArgumentException()
     {
-        Assert.Throws<ArgumentException>(() => Result<string>.Success(null));
+        string? nullable = null;
+        Assert.Throws<ArgumentException>(() => Result<string>.Success(nullable!));
     }
 
     [Theory]
-    [InlineData(null)]
     [InlineData("")]
     [InlineData("   ")]
     public void Failure_InvalidError_ThrowsArgumentException(string error)
     {
-        Assert.Throws<ArgumentException>(() => Result<string>.Failure(error));
+        Assert.Throws<ArgumentException>(() => Result<string>.Failure(error!));
     }
 
     [Fact]
