@@ -218,13 +218,48 @@ public partial class ServiceListForm : Form
     private void UpdateMonitoredServicesGrid()
     {
         dgvMonitoredServices.DataSource = null;
-        dgvMonitoredServices.DataSource = _monitoredServices.Select(m => new
+        
+        // If monitoring is active, use live data from ServiceMonitor
+        // Otherwise, get current status from ServiceController
+        var displayData = _monitoredServices.Select(m => 
         {
-            ServiceName = m.ServiceName,
-            DisplayName = m.DisplayName,
-            NotificationEnabled = m.NotificationEnabled ? "有効" : "無効",
-            LastStatus = m.LastKnownStatus.ToString()
+            var status = m.LastKnownStatus.ToString();
+            
+            if (_serviceMonitor.IsMonitoring)
+            {
+                // Use live data from ServiceMonitor
+                var liveService = _serviceMonitor.MonitoredServices
+                    .FirstOrDefault(s => s.ServiceName.Equals(m.ServiceName, StringComparison.OrdinalIgnoreCase));
+                if (liveService != null)
+                {
+                    status = liveService.LastKnownStatus.ToString();
+                }
+            }
+            else
+            {
+                // Get current status from system
+                try
+                {
+                    using var controller = new ServiceController(m.ServiceName);
+                    controller.Refresh();
+                    status = controller.Status.ToString();
+                }
+                catch
+                {
+                    status = "Unknown";
+                }
+            }
+            
+            return new
+            {
+                ServiceName = m.ServiceName,
+                DisplayName = m.DisplayName,
+                NotificationEnabled = m.NotificationEnabled ? "有効" : "無効",
+                LastStatus = status
+            };
         }).ToList();
+        
+        dgvMonitoredServices.DataSource = displayData;
 
         if (dgvMonitoredServices.Columns.Count > 0)
         {

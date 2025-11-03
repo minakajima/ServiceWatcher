@@ -58,7 +58,7 @@ public class ServiceMonitorTests
         ServiceName = name,
         DisplayName = name + "Display",
         NotificationEnabled = true,
-        LastKnownStatus = ServiceStatus.Running,
+        LastKnownStatus = ServiceStatus.Unknown,
         IsAvailable = true
     };
 
@@ -306,5 +306,57 @@ public class ServiceMonitorTests
         var countBefore = monitor.Changes.Count;
         await Task.Delay(100);
         Assert.Equal(countBefore, monitor.Changes.Count);
+    }
+
+    [Fact]
+    public async Task InitialStatusCheck_UnknownToRunning_UpdatesStatusWithoutEvent()
+    {
+        var logger = new Mock<ILogger<ServiceMonitor>>();
+        var monitor = new TestServiceMonitor(logger.Object, new[] { ServiceStatus.Running });
+        
+        var service = CreateService("svc1");
+        await monitor.AddServiceAsync(service);
+        
+        // Verify service starts with Unknown status
+        var addedService = monitor.MonitoredServices.First();
+        Assert.Equal(ServiceStatus.Unknown, addedService.LastKnownStatus);
+        
+        await monitor.StartMonitoringAsync();
+        
+        // Wait for initial status check to complete
+        await Task.Delay(100);
+        
+        // Initial check should update status but NOT fire event (LastKnownStatus was Unknown)
+        Assert.Empty(monitor.Changes);
+        
+        // Verify status was updated internally
+        var monitoredService = monitor.MonitoredServices.First();
+        Assert.Equal(ServiceStatus.Running, monitoredService.LastKnownStatus);
+    }
+
+    [Fact]
+    public async Task InitialStatusCheck_EnsuresStatusAvailableAfterStart()
+    {
+        var logger = new Mock<ILogger<ServiceMonitor>>();
+        // Simulates real scenario: service starts as Running
+        var monitor = new TestServiceMonitor(logger.Object, new[] { ServiceStatus.Running });
+        
+        var service = CreateService("svc1");
+        await monitor.AddServiceAsync(service);
+        
+        // Before monitoring starts, verify Unknown status
+        var addedService = monitor.MonitoredServices.First();
+        Assert.Equal(ServiceStatus.Unknown, addedService.LastKnownStatus);
+        
+        var startResult = await monitor.StartMonitoringAsync();
+        Assert.True(startResult.IsSuccess);
+        
+        // Wait for initial status check to complete
+        await Task.Delay(100);
+        
+        // After StartMonitoring, initial check should have completed
+        // Status should be updated (this is what UI depends on)
+        var monitoredService = monitor.MonitoredServices.First();
+        Assert.Equal(ServiceStatus.Running, monitoredService.LastKnownStatus);
     }
 }

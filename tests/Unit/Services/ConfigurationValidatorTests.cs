@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using ServiceWatcher.Models;
 using ServiceWatcher.Services;
 using Xunit;
+using ConfigValidator = ServiceWatcher.Services.ConfigurationValidator;
 
 namespace ServiceWatcher.Tests.Unit.Services;
 
@@ -20,7 +21,7 @@ public class ConfigurationValidatorTests
                 new() { ServiceName = "SVC1", DisplayName = "Service 1 Duplicate", NotificationEnabled = true, IsAvailable = true }
             }
         };
-        var validator = new ConfigurationValidator();
+        var validator = new ConfigValidator();
         var result = validator.Validate(config);
         Assert.False(result.IsValid);
         Assert.Contains(result.Errors, e => e.Contains("重複したサービス名"));
@@ -40,7 +41,7 @@ public class ConfigurationValidatorTests
             NotificationDisplayTimeSeconds = 30,
             MonitoredServices = services
         };
-        var validator = new ConfigurationValidator();
+        var validator = new ConfigValidator();
         var result = validator.Validate(config);
         Assert.False(result.IsValid);
         Assert.Contains(result.Errors, e => e.Contains("監視サービス数は100個以下"));
@@ -49,7 +50,7 @@ public class ConfigurationValidatorTests
     [Fact]
     public void Validate_NullConfiguration_ReturnsError()
     {
-        var validator = new ConfigurationValidator();
+        var validator = new ConfigValidator();
         var result = validator.Validate(null!);
         Assert.False(result.IsValid);
         Assert.Contains(result.Errors, e => e.Contains("null"));
@@ -67,7 +68,7 @@ public class ConfigurationValidatorTests
             MonitoredServices = new List<MonitoredService>()
         };
 
-        var validator = new ConfigurationValidator();
+        var validator = new ConfigValidator();
         var result = validator.Validate(config);
 
         Assert.False(result.IsValid);
@@ -86,11 +87,11 @@ public class ConfigurationValidatorTests
             MonitoredServices = new List<MonitoredService>()
         };
 
-        var validator = new ConfigurationValidator();
+        var validator = new ConfigValidator();
         var result = validator.Validate(config);
 
         Assert.False(result.IsValid);
-        Assert.Contains(result.Errors, e => e.Contains("3600秒"));
+        Assert.Contains(result.Errors, e => e.Contains("3600秒(1時間)以下"));
     }
 
     [Theory]
@@ -106,7 +107,7 @@ public class ConfigurationValidatorTests
             MonitoredServices = new List<MonitoredService>()
         };
 
-        var validator = new ConfigurationValidator();
+        var validator = new ConfigValidator();
         var result = validator.Validate(config);
 
         Assert.True(result.IsValid);
@@ -122,7 +123,7 @@ public class ConfigurationValidatorTests
             MonitoredServices = new List<MonitoredService>()
         };
 
-        var validator = new ConfigurationValidator();
+        var validator = new ConfigValidator();
         var result = validator.Validate(config);
 
         Assert.False(result.IsValid);
@@ -141,11 +142,11 @@ public class ConfigurationValidatorTests
             MonitoredServices = new List<MonitoredService>()
         };
 
-        var validator = new ConfigurationValidator();
+        var validator = new ConfigValidator();
         var result = validator.Validate(config);
 
         Assert.False(result.IsValid);
-        Assert.Contains(result.Errors, e => e.Contains("300秒"));
+        Assert.Contains(result.Errors, e => e.Contains("300秒(5分)以下"));
     }
 
     [Theory]
@@ -161,7 +162,7 @@ public class ConfigurationValidatorTests
             MonitoredServices = new List<MonitoredService>()
         };
 
-        var validator = new ConfigurationValidator();
+        var validator = new ConfigValidator();
         var result = validator.Validate(config);
 
         Assert.True(result.IsValid);
@@ -177,7 +178,7 @@ public class ConfigurationValidatorTests
             MonitoredServices = null!
         };
 
-        var validator = new ConfigurationValidator();
+        var validator = new ConfigValidator();
         var result = validator.Validate(config);
 
         Assert.False(result.IsValid);
@@ -197,7 +198,7 @@ public class ConfigurationValidatorTests
             }
         };
 
-        var validator = new ConfigurationValidator();
+        var validator = new ConfigValidator();
         var result = validator.Validate(config);
 
         Assert.False(result.IsValid);
@@ -217,7 +218,7 @@ public class ConfigurationValidatorTests
             }
         };
 
-        var validator = new ConfigurationValidator();
+        var validator = new ConfigValidator();
         var result = validator.Validate(config);
 
         Assert.False(result.IsValid);
@@ -238,7 +239,7 @@ public class ConfigurationValidatorTests
             }
         };
 
-        var validator = new ConfigurationValidator();
+        var validator = new ConfigValidator();
         var result = validator.Validate(config);
 
         Assert.True(result.IsValid);
@@ -259,10 +260,49 @@ public class ConfigurationValidatorTests
             }
         };
 
-        var validator = new ConfigurationValidator();
+        var validator = new ConfigValidator();
         var result = validator.Validate(config);
 
         Assert.False(result.IsValid);
         Assert.True(result.Errors.Count >= 4);
+    }
+
+    [Fact]
+    public void SimpleConfigLoader_FiltersEmptyServiceNames()
+    {
+        // This test verifies the fix for the bug where empty service names
+        // caused "Unknown" status display in the UI
+        var tempFile = Path.GetTempFileName();
+        try
+        {
+            // Create config with empty service name (the bug scenario)
+            var configJson = @"{
+                ""monitoringIntervalSeconds"": 5,
+                ""monitoredServices"": [
+                    {
+                        ""ServiceName"": """",
+                        ""DisplayName"": """",
+                        ""NotificationEnabled"": true
+                    },
+                    {
+                        ""ServiceName"": ""ValidService"",
+                        ""DisplayName"": ""Valid Service"",
+                        ""NotificationEnabled"": true
+                    }
+                ]
+            }";
+            File.WriteAllText(tempFile, configJson);
+
+            // Load services - should filter out empty service name
+            var services = ServiceWatcher.Utils.SimpleConfigLoader.LoadServices(tempFile);
+
+            Assert.Single(services);
+            Assert.Equal("ValidService", services[0].ServiceName);
+        }
+        finally
+        {
+            if (File.Exists(tempFile))
+                File.Delete(tempFile);
+        }
     }
 }

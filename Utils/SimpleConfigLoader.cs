@@ -37,7 +37,9 @@ public static class SimpleConfigLoader
             var json = File.ReadAllText(path);
             var config = JsonSerializer.Deserialize<SimpleConfig>(json, JsonOptions);
             
-            return config?.Services ?? new List<MonitoredService>();
+            // Filter out services with empty/null ServiceName
+            var services = config?.Services ?? new List<MonitoredService>();
+            return services.Where(s => !string.IsNullOrWhiteSpace(s.ServiceName)).ToList();
         }
         catch
         {

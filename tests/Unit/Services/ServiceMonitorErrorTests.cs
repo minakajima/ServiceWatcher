@@ -42,7 +42,7 @@ public class ServiceMonitorErrorTests
         ServiceName = name,
         DisplayName = name + "Display",
         NotificationEnabled = true,
-        LastKnownStatus = ServiceStatus.Running,
+        LastKnownStatus = ServiceStatus.Unknown,
         IsAvailable = true
     };
 
@@ -58,6 +58,7 @@ public class ServiceMonitorErrorTests
         var start = await monitor.StartMonitoringAsync();
         Assert.True(start.IsSuccess);
         await monitor.CheckAllServicesAsync();
+        await Task.Delay(50); // Wait for error event to be raised
         Assert.Single(monitor.Errors);
         Assert.Contains("Service not found", monitor.Errors[0].ErrorMessage);
     }
@@ -74,6 +75,7 @@ public class ServiceMonitorErrorTests
         var start = await monitor.StartMonitoringAsync();
         Assert.True(start.IsSuccess);
         await monitor.CheckAllServicesAsync();
+        await Task.Delay(50); // Wait for error event to be raised
         Assert.Single(monitor.Errors);
         Assert.Contains("Access denied", monitor.Errors[0].ErrorMessage);
     }
@@ -90,6 +92,7 @@ public class ServiceMonitorErrorTests
         var start = await monitor.StartMonitoringAsync();
         Assert.True(start.IsSuccess);
         await monitor.CheckAllServicesAsync();
+        await Task.Delay(50); // Wait for error event to be raised
         Assert.Single(monitor.Errors);
         Assert.Contains("Unexpected error", monitor.Errors[0].ErrorMessage);
     }

@@ -158,6 +158,8 @@ public class ServiceMonitor : IServiceMonitor
             {
                 var currentStatus = await GetCurrentStatusAsync(service.ServiceName);
                 
+                _logger.LogDebug($"Service '{service.ServiceName}': Current={currentStatus}, LastKnown={service.LastKnownStatus}");
+                
                 if (currentStatus != service.LastKnownStatus && service.LastKnownStatus != ServiceStatus.Unknown)
                 {
                     // Status changed - raise event
@@ -184,6 +186,7 @@ public class ServiceMonitor : IServiceMonitor
                 {
                     service.LastKnownStatus = currentStatus;
                     service.LastChecked = DateTime.Now;
+                    _logger.LogDebug($"Service '{service.ServiceName}' status updated to {currentStatus} (no event fired)");
                 }
 
                 service.IsAvailable = true;
