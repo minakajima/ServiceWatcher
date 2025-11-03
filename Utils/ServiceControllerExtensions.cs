@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using System.ServiceProcess;
 using ServiceWatcher.Models;
 
@@ -5,7 +6,9 @@ namespace ServiceWatcher.Utils;
 
 /// <summary>
 /// Extension methods for ServiceController.
+/// Depends on real Windows services, tested only in integration scenarios.
 /// </summary>
+[ExcludeFromCodeCoverage] // 実サービス依存、単体テスト対象外
 public static class ServiceControllerExtensions
 {
     /// <summary>

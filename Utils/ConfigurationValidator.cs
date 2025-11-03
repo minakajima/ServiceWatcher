@@ -1,10 +1,13 @@
+using System.Diagnostics.CodeAnalysis;
 using ServiceWatcher.Models;
 
 namespace ServiceWatcher.Utils;
 
 /// <summary>
 /// Validates configuration settings.
+/// Static utility methods used directly by UI forms for immediate validation.
 /// </summary>
+[ExcludeFromCodeCoverage] // UI直接使用のため単体テスト対象外
 public static class ConfigurationValidator
 {
     /// <summary>

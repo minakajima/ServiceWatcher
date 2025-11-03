@@ -13,6 +13,7 @@ public class NotificationService : INotificationService
     private readonly SynchronizationContext? _synchronizationContext;
     private readonly Dictionary<string, Form> _activeNotifications;
     private readonly object _lock = new object();
+    private readonly bool _simulate;
 
     /// <summary>
     /// Event raised when user acknowledges (closes) a notification.
@@ -33,11 +34,12 @@ public class NotificationService : INotificationService
         }
     }
 
-    public NotificationService(ILogger<NotificationService> logger)
+    public NotificationService(ILogger<NotificationService> logger, bool simulate = false)
     {
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         _synchronizationContext = SynchronizationContext.Current;
         _activeNotifications = new Dictionary<string, Form>(StringComparer.OrdinalIgnoreCase);
+        _simulate = simulate;
     }
 
     /// <summary>
@@ -67,15 +69,26 @@ public class NotificationService : INotificationService
                 }
             }
 
-            // Create notification form on UI thread
-            if (_synchronizationContext != null)
+            if (_simulate)
             {
-                _synchronizationContext.Post(_ => CreateNotificationForm(statusChange, displayTimeSeconds), null);
+                // テスト用: フォーム生成をスキップし辞書にプレースホルダ登録
+                lock (_lock)
+                {
+                    _activeNotifications[statusChange.ServiceName] = new Form();
+                }
             }
             else
             {
-                // Fallback if no synchronization context (shouldn't happen in Windows Forms)
-                CreateNotificationForm(statusChange, displayTimeSeconds);
+                // Create notification form on UI thread
+                if (_synchronizationContext != null)
+                {
+                    _synchronizationContext.Post(_ => CreateNotificationForm(statusChange, displayTimeSeconds), null);
+                }
+                else
+                {
+                    // Fallback if no synchronization context (shouldn't happen in Windows Forms tests maybe)
+                    CreateNotificationForm(statusChange, displayTimeSeconds);
+                }
             }
 
             statusChange.NotificationShown = true;
@@ -99,12 +112,10 @@ public class NotificationService : INotificationService
     }
 
     /// <summary>
-    /// Creates and displays a notification form.
+    /// Creates and displays a notification form (UI モードのみ)。
     /// </summary>
     private void CreateNotificationForm(ServiceStatusChange statusChange, int displayTimeSeconds)
     {
-        // Note: NotificationForm will be created in T037-T041
-        // For now, create a placeholder form
         var notificationForm = new Form
         {
             Text = $"サービス停止通知: {statusChange.DisplayName}",
@@ -214,13 +225,16 @@ public class NotificationService : INotificationService
         {
             try
             {
-                if (_synchronizationContext != null)
+                if (!_simulate)
                 {
-                    _synchronizationContext.Post(_ => form.Close(), null);
-                }
-                else
-                {
-                    form.Close();
+                    if (_synchronizationContext != null)
+                    {
+                        _synchronizationContext.Post(_ => form.Close(), null);
+                    }
+                    else
+                    {
+                        form.Close();
+                    }
                 }
             }
             catch (Exception ex)
@@ -255,15 +269,19 @@ public class NotificationService : INotificationService
         {
             try
             {
-                if (_synchronizationContext != null)
+                if (!_simulate)
                 {
-                    _synchronizationContext.Post(_ => formToClose.Close(), null);
-                }
-                else
-                {
-                    formToClose.Close();
+                    if (_synchronizationContext != null)
+                    {
+                        _synchronizationContext.Post(_ => formToClose.Close(), null);
+                    }
+                    else
+                    {
+                        formToClose.Close();
+                    }
                 }
 
+                OnNotificationClosed(serviceName, false);
                 _logger.LogInformation($"Closed notification for service '{serviceName}'");
                 return true;
             }

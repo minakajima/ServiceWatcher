@@ -135,7 +135,11 @@ public class ServiceMonitor : IServiceMonitor
     /// <summary>
     /// Checks all monitored services and raises events for status changes.
     /// </summary>
-    private async Task CheckAllServicesAsync()
+    /// <summary>
+    /// Checks all monitored services and raises events for status changes.
+    /// Made protected internal virtual for testability (override polling behavior in tests).
+    /// </summary>
+    internal virtual async Task CheckAllServicesAsync()
     {
         if (_cancellationTokenSource?.Token.IsCancellationRequested == true)
         {
@@ -153,6 +157,8 @@ public class ServiceMonitor : IServiceMonitor
             try
             {
                 var currentStatus = await GetCurrentStatusAsync(service.ServiceName);
+                
+                _logger.LogDebug($"Service '{service.ServiceName}': Current={currentStatus}, LastKnown={service.LastKnownStatus}");
                 
                 if (currentStatus != service.LastKnownStatus && service.LastKnownStatus != ServiceStatus.Unknown)
                 {
@@ -180,6 +186,7 @@ public class ServiceMonitor : IServiceMonitor
                 {
                     service.LastKnownStatus = currentStatus;
                     service.LastChecked = DateTime.Now;
+                    _logger.LogDebug($"Service '{service.ServiceName}' status updated to {currentStatus} (no event fired)");
                 }
 
                 service.IsAvailable = true;
@@ -206,7 +213,11 @@ public class ServiceMonitor : IServiceMonitor
     /// <summary>
     /// Gets the current status of a specific service.
     /// </summary>
-    private async Task<ServiceStatus> GetCurrentStatusAsync(string serviceName)
+    /// <summary>
+    /// Gets the current status of a specific service.
+    /// Made protected internal virtual for testability (override service status resolution in tests).
+    /// </summary>
+    internal virtual async Task<ServiceStatus> GetCurrentStatusAsync(string serviceName)
     {
         return await Task.Run(() =>
         {

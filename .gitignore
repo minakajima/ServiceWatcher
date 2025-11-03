@@ -427,3 +427,28 @@ user-settings.json
 # Performance test results
 performance-results/
 benchmark-results/
+
+# ----------------------------------------------------------------------
+# ServiceWatcher追加ルール (リポジトリ監査後に拡張)
+# ----------------------------------------------------------------------
+# 配布/リリース生成物
+release/
+publish/*.zip
+
+# 追加のカバレッジレポートフォルダ (フィルタ済みHTML等)
+tests/coveragereport_filtered/
+coveragereport_filtered/
+tests/coveragereport_excluded/
+coveragereport_excluded/
+
+# 一時的なローカル設定 (既に config.json は ignore 済 / 現在追跡中なので削除推奨)
+config.local.json
+
+# ローカル検証用スクリプト出力 / パフォーマンス計測結果 (保持不要)
+perf-temp/
+
+# 万一生成されたIDE個別設定(残骸)の明示 (既存 *.user で網羅されるが明記)
+*.csproj.user
+
+# 生成される追加バックアップ拡張子
+*.backup.json

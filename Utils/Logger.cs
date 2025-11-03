@@ -1,10 +1,13 @@
+using System.Diagnostics.CodeAnalysis;
 using Microsoft.Extensions.Logging;
 
 namespace ServiceWatcher.Utils;
 
 /// <summary>
 /// Simple file-based logger with rotation support.
+/// Used in production runtime only, not tested in unit tests.
 /// </summary>
+[ExcludeFromCodeCoverage] // 実運用時のみ使用、単体テスト対象外
 public class Logger : ILogger
 {
     private static readonly object _lock = new object();
@@ -116,7 +119,9 @@ public class Logger : ILogger
 
 /// <summary>
 /// Logger factory for creating Logger instances.
+/// Used in production runtime only, not tested in unit tests.
 /// </summary>
+[ExcludeFromCodeCoverage] // 実運用時のみ使用、単体テスト対象外
 public class LoggerFactory : ILoggerFactory
 {
     public void AddProvider(ILoggerProvider provider)

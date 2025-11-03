@@ -1,3 +1,5 @@
+using System.Diagnostics.CodeAnalysis;
+using System.ServiceProcess;
 using Microsoft.Extensions.Logging;
 using ServiceWatcher.Services;
 using ServiceWatcher.Models;
@@ -8,6 +10,7 @@ namespace ServiceWatcher.UI;
 /// <summary>
 /// Main application window for service monitoring.
 /// </summary>
+[ExcludeFromCodeCoverage]
 public partial class MainForm : Form
 {
     private readonly IServiceMonitor _serviceMonitor;
@@ -158,6 +161,11 @@ public partial class MainForm : Form
                 UpdateStatusLabel($"監視中 - {_serviceMonitor.MonitoredServices.Count}個のサービス");
                 btnStart.Enabled = false;
                 btnStop.Enabled = true;
+                
+                // Wait a moment for initial status check to complete, then refresh UI
+                await Task.Delay(100);
+                RefreshServiceList(); // Update list to show live monitoring data with initial status
+                
                 _logger.LogInformation($"Started monitoring {services.Count} services with {interval}s interval");
             }
             else
@@ -191,6 +199,7 @@ public partial class MainForm : Form
                 _cancellationTokenSource?.Cancel();
                 _cancellationTokenSource?.Dispose();
                 _cancellationTokenSource = null;
+                RefreshServiceList(); // Update list to show config file data
                 _logger.LogInformation("Stopped monitoring services");
             }
             else
@@ -218,6 +227,16 @@ public partial class MainForm : Form
         if (e.StatusChange.IsStopEvent)
         {
             _notificationService.ShowNotification(e.StatusChange, 30);
+        }
+
+        // Update UI to reflect status change
+        if (InvokeRequired)
+        {
+            Invoke(() => RefreshServiceList());
+        }
+        else
+        {
+            RefreshServiceList();
         }
     }
 
@@ -306,7 +325,39 @@ public partial class MainForm : Form
     {
         try
         {
-            var services = SimpleConfigLoader.LoadServices();
+            // If monitoring is active, use live data from ServiceMonitor
+            // Otherwise, load from config file and get current status
+            List<MonitoredService> services;
+            
+            if (_serviceMonitor.IsMonitoring)
+            {
+                services = _serviceMonitor.MonitoredServices.ToList();
+            }
+            else
+            {
+                // Load from config and get current system status
+                services = SimpleConfigLoader.LoadServices();
+                foreach (var service in services)
+                {
+                    try
+                    {
+                        using var controller = new System.ServiceProcess.ServiceController(service.ServiceName);
+                        controller.Refresh();
+                        service.LastKnownStatus = controller.Status.ToServiceStatus();
+                    }
+                    catch
+                    {
+                        service.LastKnownStatus = ServiceStatus.Unknown;
+                    }
+                }
+            }
+            
+            _logger.LogInformation($"RefreshServiceList: IsMonitoring={_serviceMonitor.IsMonitoring}, Count={services.Count}");
+            foreach (var svc in services)
+            {
+                _logger.LogInformation($"  - {svc.ServiceName}: {svc.LastKnownStatus}");
+            }
+            
             dgvMonitoredServices.DataSource = null;
             dgvMonitoredServices.DataSource = services.Select(s => new
             {
