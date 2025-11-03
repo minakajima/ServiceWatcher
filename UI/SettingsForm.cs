@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using Microsoft.Extensions.Logging;
 using ServiceWatcher.Utils;
 using System.Text.Json;
@@ -7,6 +8,7 @@ namespace ServiceWatcher.UI;
 /// <summary>
 /// Settings form for configuring application options.
 /// </summary>
+[ExcludeFromCodeCoverage]
 public partial class SettingsForm : Form
 {
     private readonly ILogger<SettingsForm> _logger;

@@ -438,6 +438,8 @@ publish/*.zip
 # 追加のカバレッジレポートフォルダ (フィルタ済みHTML等)
 tests/coveragereport_filtered/
 coveragereport_filtered/
+tests/coveragereport_excluded/
+coveragereport_excluded/
 
 # 一時的なローカル設定 (既に config.json は ignore 済 / 現在追跡中なので削除推奨)
 config.local.json

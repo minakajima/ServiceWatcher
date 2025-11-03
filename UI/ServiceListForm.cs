@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using System.ServiceProcess;
 using Microsoft.Extensions.Logging;
 using ServiceWatcher.Models;
@@ -10,6 +11,7 @@ namespace ServiceWatcher.UI;
 /// <summary>
 /// Form for browsing and selecting Windows services to monitor.
 /// </summary>
+[ExcludeFromCodeCoverage]
 public partial class ServiceListForm : Form
 {
     private readonly IServiceMonitor _serviceMonitor;

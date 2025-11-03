@@ -88,4 +88,72 @@ public class NotificationServiceTests
         Assert.Equal("svcAck", received!.ServiceName);
         Assert.False(received.WasAutoClosed);
     }
+
+    [Fact]
+    public void ShowNotification_NullStatusChange_Fails()
+    {
+        var logger = new Mock<ILogger<NotificationService>>();
+        var svc = new NotificationService(logger.Object, simulate: true);
+        var result = svc.ShowNotification(null!, 10);
+        Assert.False(result.IsSuccess);
+        Assert.Contains("cannot be null", result.Error);
+    }
+
+    [Fact]
+    public void ShowNotification_ExcessiveDisplayTime_Fails()
+    {
+        var logger = new Mock<ILogger<NotificationService>>();
+        var svc = new NotificationService(logger.Object, simulate: true);
+        var change = Change("svc1", ServiceStatus.Running, ServiceStatus.Stopped);
+        var result = svc.ShowNotification(change, 301);
+        Assert.False(result.IsSuccess);
+        Assert.Contains("between 0 and 300", result.Error);
+    }
+
+    [Fact]
+    public void CloseNotification_EmptyServiceName_ReturnsFalse()
+    {
+        var logger = new Mock<ILogger<NotificationService>>();
+        var svc = new NotificationService(logger.Object, simulate: true);
+        Assert.False(svc.CloseNotification(""));
+        Assert.False(svc.CloseNotification("  "));
+    }
+
+    [Fact]
+    public void CloseNotification_NonExistent_ReturnsFalse()
+    {
+        var logger = new Mock<ILogger<NotificationService>>();
+        var svc = new NotificationService(logger.Object, simulate: true);
+        Assert.False(svc.CloseNotification("nonexistent"));
+    }
+
+    [Fact]
+    public void GetActiveNotifications_ReturnsReadOnlyList()
+    {
+        var logger = new Mock<ILogger<NotificationService>>();
+        var svc = new NotificationService(logger.Object, simulate: true);
+        var change1 = Change("svc1", ServiceStatus.Running, ServiceStatus.Stopped);
+        var change2 = Change("svc2", ServiceStatus.Running, ServiceStatus.Stopped);
+        
+        svc.ShowNotification(change1, 0);
+        svc.ShowNotification(change2, 0);
+        
+        var activeList = svc.GetActiveNotifications();
+        Assert.Equal(2, activeList.Count);
+        Assert.Contains(activeList, n => n.ServiceName == "svc1");
+        Assert.Contains(activeList, n => n.ServiceName == "svc2");
+    }
+
+    [Fact]
+    public async Task ShowNotificationAsync_ReturnsSuccess()
+    {
+        var logger = new Mock<ILogger<NotificationService>>();
+        var svc = new NotificationService(logger.Object, simulate: true);
+        var change = Change("svcAsync", ServiceStatus.Running, ServiceStatus.Stopped);
+        
+        var result = await svc.ShowNotificationAsync(change, 0);
+        
+        Assert.True(result.IsSuccess);
+        Assert.Equal(1, svc.ActiveNotificationCount);
+    }
 }

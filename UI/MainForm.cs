@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using Microsoft.Extensions.Logging;
 using ServiceWatcher.Services;
 using ServiceWatcher.Models;
@@ -8,6 +9,7 @@ namespace ServiceWatcher.UI;
 /// <summary>
 /// Main application window for service monitoring.
 /// </summary>
+[ExcludeFromCodeCoverage]
 public partial class MainForm : Form
 {
     private readonly IServiceMonitor _serviceMonitor;

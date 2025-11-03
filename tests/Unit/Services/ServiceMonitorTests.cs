@@ -149,4 +149,162 @@ public class ServiceMonitorTests
         var result = await monitor.UpdateMonitoringIntervalAsync(interval);
         Assert.True(result.IsSuccess);
     }
+
+    [Fact]
+    public async Task RefreshMonitoredServices_WithConfigManager_UpdatesList()
+    {
+        var logger = new Mock<ILogger<ServiceMonitor>>();
+        var configManager = new Mock<IConfigurationManager>();
+        var newConfig = new ApplicationConfiguration
+        {
+            MonitoringIntervalSeconds = 5,
+            MonitoredServices = new List<MonitoredService>
+            {
+                CreateService("svc2"),
+                CreateService("svc3")
+            }
+        };
+        configManager.Setup(x => x.LoadAsync()).ReturnsAsync(Result<ApplicationConfiguration>.Success(newConfig));
+        
+        var monitor = new ServiceMonitor(logger.Object, configManager.Object);
+        await monitor.AddServiceAsync(CreateService("svc1"));
+        
+        var result = await monitor.RefreshMonitoredServicesAsync();
+        Assert.True(result.IsSuccess);
+        Assert.Equal(2, result.Value);
+        Assert.Equal(2, monitor.MonitoredServices.Count);
+        Assert.Contains(monitor.MonitoredServices, s => s.ServiceName == "svc2");
+        Assert.Contains(monitor.MonitoredServices, s => s.ServiceName == "svc3");
+    }
+
+    [Fact]
+    public async Task StatusChange_NoChange_EventNotRaised()
+    {
+        var logger = new Mock<ILogger<ServiceMonitor>>();
+        // Both polls return same status - no change
+        var monitor = new TestServiceMonitor(logger.Object, new[] { ServiceStatus.Running, ServiceStatus.Running });
+        await monitor.AddServiceAsync(CreateService("svc1"));
+        await monitor.StartMonitoringAsync();
+        await monitor.CheckAllServicesAsync();
+        
+        // Wait a bit to ensure no event fires
+        await Task.Delay(100);
+        Assert.Empty(monitor.Changes);
+    }
+
+    [Fact]
+    public async Task RemoveService_NonExistent_Fails()
+    {
+        var logger = new Mock<ILogger<ServiceMonitor>>();
+        var monitor = new TestServiceMonitor(logger.Object, new[] { ServiceStatus.Running });
+        var result = await monitor.RemoveServiceAsync("nonexistent");
+        Assert.False(result.IsSuccess);
+        Assert.Contains("is not in the", result.Error);
+    }
+
+    [Fact]
+    public async Task AddService_Null_Fails()
+    {
+        var logger = new Mock<ILogger<ServiceMonitor>>();
+        var monitor = new TestServiceMonitor(logger.Object, new[] { ServiceStatus.Running });
+        var result = await monitor.AddServiceAsync(null!);
+        Assert.False(result.IsSuccess);
+    }
+
+    [Fact]
+    public async Task StopMonitoring_NotRunning_ReturnsFailure()
+    {
+        var logger = new Mock<ILogger<ServiceMonitor>>();
+        var monitor = new TestServiceMonitor(logger.Object, new[] { ServiceStatus.Running });
+        await monitor.AddServiceAsync(CreateService("svc1"));
+        
+        // Stop without starting should fail
+        var result = await monitor.StopMonitoringAsync();
+        Assert.False(result.IsSuccess);
+        Assert.Contains("not active", result.Error);
+    }
+
+    [Fact]
+    public async Task GetCurrentStatus_ReturnsLatest()
+    {
+        var logger = new Mock<ILogger<ServiceMonitor>>();
+        var monitor = new TestServiceMonitor(logger.Object, new[] { ServiceStatus.Stopped });
+        await monitor.AddServiceAsync(CreateService("svc1"));
+        
+        // Trigger status fetch
+        await monitor.CheckAllServicesAsync();
+        
+        var service = monitor.MonitoredServices[0];
+        Assert.Equal(ServiceStatus.Stopped, service.LastKnownStatus);
+    }
+
+    [Fact]
+    public async Task MultipleServices_SimultaneousChanges_AllEventsRaised()
+    {
+        var logger = new Mock<ILogger<ServiceMonitor>>();
+        // Each service transitions: Running -> Stopped
+        var monitor = new TestServiceMonitor(logger.Object, new[] { 
+            ServiceStatus.Running, ServiceStatus.Running,  // svc1, svc2 initial
+            ServiceStatus.Stopped, ServiceStatus.Stopped   // svc1, svc2 changed
+        });
+        
+        await monitor.AddServiceAsync(CreateService("svc1"));
+        await monitor.AddServiceAsync(CreateService("svc2"));
+        await monitor.StartMonitoringAsync();
+        await monitor.CheckAllServicesAsync();
+        
+        var received = await WaitForAsync(() => monitor.Changes.Count == 2, 500);
+        Assert.True(received, "Expected 2 status changes");
+        Assert.Contains(monitor.Changes, c => c.ServiceName == "svc1");
+        Assert.Contains(monitor.Changes, c => c.ServiceName == "svc2");
+    }
+
+    [Fact]
+    public async Task IsMonitoring_TrueWhenActive_FalseWhenStopped()
+    {
+        var logger = new Mock<ILogger<ServiceMonitor>>();
+        var monitor = new TestServiceMonitor(logger.Object, new[] { ServiceStatus.Running });
+        await monitor.AddServiceAsync(CreateService("svc1"));
+        
+        Assert.False(monitor.IsMonitoring);
+        
+        await monitor.StartMonitoringAsync();
+        Assert.True(monitor.IsMonitoring);
+        
+        await monitor.StopMonitoringAsync();
+        Assert.False(monitor.IsMonitoring);
+    }
+
+    [Fact]
+    public async Task StartMonitoring_AlreadyRunning_Fails()
+    {
+        var logger = new Mock<ILogger<ServiceMonitor>>();
+        var monitor = new TestServiceMonitor(logger.Object, new[] { ServiceStatus.Running });
+        await monitor.AddServiceAsync(CreateService("svc1"));
+        
+        await monitor.StartMonitoringAsync();
+        var secondStart = await monitor.StartMonitoringAsync();
+        
+        Assert.False(secondStart.IsSuccess);
+        Assert.Contains("already active", secondStart.Error);
+    }
+
+    [Fact]
+    public async Task StopMonitoring_CancelsPolling()
+    {
+        var logger = new Mock<ILogger<ServiceMonitor>>();
+        var monitor = new TestServiceMonitor(logger.Object, new[] { ServiceStatus.Running, ServiceStatus.Running });
+        await monitor.AddServiceAsync(CreateService("svc1"));
+        
+        await monitor.StartMonitoringAsync();
+        var stopResult = await monitor.StopMonitoringAsync();
+        
+        Assert.True(stopResult.IsSuccess);
+        Assert.False(monitor.IsMonitoring);
+        
+        // After stop, no more status changes should be recorded
+        var countBefore = monitor.Changes.Count;
+        await Task.Delay(100);
+        Assert.Equal(countBefore, monitor.Changes.Count);
+    }
 }

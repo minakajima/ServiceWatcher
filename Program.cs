@@ -1,8 +1,10 @@
+using System.Diagnostics.CodeAnalysis;
 using ServiceWatcher.UI;
 using ServiceWatcher.Utils;
 
 namespace ServiceWatcher;
 
+[ExcludeFromCodeCoverage]
 static class Program
 {
     /// <summary>

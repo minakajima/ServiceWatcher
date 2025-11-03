@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using ServiceWatcher.Models;
@@ -7,7 +8,9 @@ namespace ServiceWatcher.Utils;
 /// <summary>
 /// 簡易設定読み込みクラス（US2簡易実装）
 /// コンパイラバグ回避のため、複雑な検証やイベントなしで実装
+/// Legacy implementation used by UI forms.
 /// </summary>
+[ExcludeFromCodeCoverage] // UI直接使用のレガシー実装、単体テスト対象外
 public static class SimpleConfigLoader
 {
     private static readonly JsonSerializerOptions JsonOptions = new()
