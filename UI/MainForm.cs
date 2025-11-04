@@ -45,6 +45,48 @@ public partial class MainForm : Form
         
         // Load window state
         LoadWindowState();
+        
+        // Apply startup settings
+        this.Load += MainForm_Load;
+    }
+
+    /// <summary>
+    /// Handles form load event to apply startup settings.
+    /// </summary>
+    private async void MainForm_Load(object? sender, EventArgs e)
+    {
+        try
+        {
+            var configPath = SimpleConfigLoader.GetDefaultConfigPath();
+            if (!File.Exists(configPath))
+                return;
+
+            var json = File.ReadAllText(configPath);
+            using var doc = System.Text.Json.JsonDocument.Parse(json);
+            var root = doc.RootElement;
+
+            // Apply startMinimized setting
+            if (root.TryGetProperty("startMinimized", out var startMinProp) && 
+                startMinProp.GetBoolean())
+            {
+                this.WindowState = FormWindowState.Minimized;
+                _logger.LogInformation("Application started minimized per configuration");
+            }
+
+            // Apply autoStartMonitoring setting
+            if (root.TryGetProperty("autoStartMonitoring", out var autoStartProp) && 
+                autoStartProp.GetBoolean())
+            {
+                _logger.LogInformation("Auto-starting monitoring per configuration");
+                // Wait briefly for UI initialization to complete
+                await Task.Delay(500);
+                btnStart_Click(this, EventArgs.Empty);
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogWarning(ex, "Failed to apply startup settings from configuration");
+        }
     }
 
     /// <summary>
