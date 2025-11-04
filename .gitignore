@@ -182,13 +182,13 @@ DocProject/Help/html
 # Click-Once directory
 publish/
 
-# Publish Web Output
+# Publish Web / Deploy Profiles
 *.[Pp]ublish.xml
 *.azurePubxml
-# Note: Comment the next line if you want to checkin your web deploy settings,
-# but database connection strings (with potential passwords) will be unencrypted
-*.pubxml
+# Publish profile users (環境依存).  *.pubxml はリポジトリに保持したいため除外しない
+*.pubxml.user
 *.publishproj
+# Win64SingleFile.pubxml などのプロファイルはコミット対象（上記 *.pubxml.user でユーザー別のみ除外）
 
 # Microsoft Azure Web App publish settings. Comment the next line if you want to
 # checkin your Azure Web App publish settings, but sensitive information contained
@@ -433,7 +433,9 @@ benchmark-results/
 # ----------------------------------------------------------------------
 # 配布/リリース生成物
 release/
+dist/
 publish/*.zip
+dist/*.zip
 
 # 追加のカバレッジレポートフォルダ (フィルタ済みHTML等)
 tests/coveragereport_filtered/
@@ -441,7 +443,7 @@ coveragereport_filtered/
 tests/coveragereport_excluded/
 coveragereport_excluded/
 
-# 一時的なローカル設定 (既に config.json は ignore 済 / 現在追跡中なので削除推奨)
+# 一時的なローカル設定 (既に config.json は ignore 済 / config.local.json はコミットしない)
 config.local.json
 
 # ローカル検証用スクリプト出力 / パフォーマンス計測結果 (保持不要)
@@ -452,3 +454,6 @@ perf-temp/
 
 # 生成される追加バックアップ拡張子
 *.backup.json
+
+# ルートに生成された publish プロファイルを保持したい場合 (安全策: 既に *.pubxml.user のみ除外)
+!Properties/PublishProfiles/*.pubxml

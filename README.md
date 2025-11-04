@@ -132,6 +132,36 @@ dotnet run
 dotnet publish -c Release -r win-x64 --self-contained
 ```
 
+### 単一ファイル版パッケージング (自動化)
+
+配布用に単一ファイル形式（実際には一部ネイティブ DLL が残る仕様）を Zip 化する処理を自動化スクリプトで実行できます。
+
+```powershell
+# 標準実行（csprojの <Version> を使用）
+pwsh scripts/package-single.ps1
+
+# 既存成果物を再生成（上書き）
+pwsh scripts/package-single.ps1 -Force
+
+# 任意バージョンでパッケージ名を生成
+pwsh scripts/package-single.ps1 -Version 1.0.1
+
+# publish 済み成果物から再Zip化のみ（高速）
+pwsh scripts/package-single.ps1 -SkipPublish
+```
+
+出力:
+- `dist/ServiceWatcher-v<version>-win-x64-single/` フォルダ
+- `dist/ServiceWatcher-v<version>-win-x64-single.zip` パッケージ
+
+同梱内容: `ServiceWatcher.exe`, ドキュメント (`README.md`, `CHANGELOG.md`, `PERFORMANCE.md`), `config.json.template`, (存在すれば) `LICENSE`
+
+注意:
+- .NET 8 SingleFile の仕様上、一部描画関連ネイティブ DLL は完全に exe 内へ統合されません。
+- さらなるサイズ削減は Trimming や InvariantGlobalization で可能ですが WinForms では副作用が出やすいためデフォルト無効。
+- CI 連携: GitHub Actions などで `pwsh scripts/package-single.ps1 -Force` を実行し `dist/*.zip` を artifact アップロード。
+
+
 ### テスト実行
 
 #### すべてのテストを実行

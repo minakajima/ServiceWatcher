@@ -170,6 +170,46 @@ Compress-Archive -Path $packageDir -DestinationPath "$packageDir.zip" -Force
 Write-Host "Package created: $packageDir.zip"
 ```
 
+#### 単一ファイル版パッケージング自動スクリプト (推奨)
+
+手動手順の代わりに `scripts/package-single.ps1` で publish + フォルダ生成 + Zip 化を一括実行できます。
+
+```powershell
+# ルートで実行 (csproj の <Version> を自動取得)
+pwsh scripts/package-single.ps1
+
+# 既存出力を再生成
+pwsh scripts/package-single.ps1 -Force
+
+# 任意バージョン指定
+pwsh scripts/package-single.ps1 -Version 1.0.1
+
+# 既存 publish 成果物を再Zip化のみ (publish スキップ)
+pwsh scripts/package-single.ps1 -SkipPublish
+```
+
+生成物: `dist/ServiceWatcher-v<version>-win-x64-single/` と Zip (`.zip`)
+
+含まれるファイル:
+- `ServiceWatcher.exe`
+- ドキュメント: `README.md`, `CHANGELOG.md`, `PERFORMANCE.md`
+- 設定テンプレート: `config.json.template`
+- (存在すれば) `LICENSE`
+
+注意事項:
+- .NET Single File の仕様により描画関連ネイティブ DLL は完全には1exeへ統合されません（WinForms/WPFスタック）。
+- Trimming は WinForms で動的ロード/反射影響が大きく本プロジェクトではデフォルト無効。
+- サイズをさらに削減したい場合のオプション例: `<InvariantGlobalization>true</InvariantGlobalization>` / PDB除去 (`<DebugType>none</DebugType>`)。
+
+スクリプト内部主なオプション:
+- `-Version` : パッケージ名のバージョンを明示指定
+- `-Force` : 既存フォルダ/zipを削除して再生成
+- `-SkipPublish` : 既存の `bin/Release/.../win-x64-single` から再パッケージのみ
+
+EXE/ZIP サイズの概要は完了時に表示されます。
+
+今後 CI 化する際は GitHub Actions で `pwsh scripts/package-single.ps1 -Force` を呼び出し、`dist/*.zip` を artifact としてアップロードすると簡潔です。
+
 ## リリースチェックリスト
 
 リリース前に以下を確認:
