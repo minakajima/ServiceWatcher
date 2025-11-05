@@ -61,7 +61,7 @@
   
   <!-- MainForm -->
   <data name="MainForm_Title" xml:space="preserve">
-    <value>サービスウォッチャー</value>
+    <value>Service Watcher</value>
   </data>
   <data name="MainForm_StartButton" xml:space="preserve">
     <value>監視開始</value>

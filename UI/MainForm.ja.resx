@@ -61,7 +61,7 @@
   
   <!-- Form -->
   <data name="$this.Text" xml:space="preserve">
-    <value>サービスウォッチャー</value>
+    <value>Service Watcher</value>
   </data>
   
   <!-- Buttons -->
@@ -80,7 +80,7 @@
   
   <!-- Labels -->
   <data name="lblTitle.Text" xml:space="preserve">
-    <value>サービスウォッチャー</value>
+    <value>Service Watcher</value>
   </data>
   <data name="lblMonitoredServices.Text" xml:space="preserve">
     <value>監視中のサービス:</value>

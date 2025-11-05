@@ -107,7 +107,7 @@ private void LanguageDropdown_SelectedIndexChanged(object sender, EventArgs e)
 ```csharp
 // Simple string
 string title = _localizationService.GetString("MainForm_Title");
-// Returns: "Service Watcher" (EN) or "サービスウォッチャー" (JA)
+// Returns: "Service Watcher" (EN) or "Service Watcher" (JA)
 
 // Formatted string
 string message = _localizationService.GetFormattedString(
@@ -170,7 +170,7 @@ Example:
 
 <!-- Strings.ja.resx -->
 <data name="MainForm_Title">
-  <value>サービスウォッチャー</value>
+  <value>Service Watcher</value>
 </data>
 <data name="MainForm_StartButton_Text">
   <value>監視開始</value>

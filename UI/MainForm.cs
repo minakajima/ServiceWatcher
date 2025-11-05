@@ -61,7 +61,7 @@ public partial class MainForm : Form
     public void ApplyLocalization()
     {
         // Form title
-        this.Text = _localizationService.GetString("MainForm_Title") ?? "サービスウォッチャー";
+        this.Text = _localizationService.GetString("MainForm_Title") ?? "Service Watcher";
         
         // Buttons
         btnStart.Text = _localizationService.GetString("MainForm_StartButton") ?? "監視開始";
@@ -70,7 +70,7 @@ public partial class MainForm : Form
         btnSettings.Text = _localizationService.GetString("MainForm_SettingsButton") ?? "設定";
         
         // Labels
-        lblTitle.Text = _localizationService.GetString("MainForm_Title") ?? "サービスウォッチャー";
+        lblTitle.Text = _localizationService.GetString("MainForm_Title") ?? "Service Watcher";
         lblMonitoredServices.Text = _localizationService.GetString("MainForm_MonitoredServicesLabel") ?? "監視中のサービス:";
     }
 
