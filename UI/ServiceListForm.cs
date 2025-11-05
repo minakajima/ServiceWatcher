@@ -168,8 +168,9 @@ public partial class ServiceListForm : Form
         btnRemoveService = new Button
         {
             Text = "監視対象から削除",
-            Location = new Point(420, 505),
-            Size = new Size(150, 30)
+            Location = new Point(400, 505),
+            Size = new Size(180, 30),
+            AutoSize = false
         };
         btnRemoveService.Click += BtnRemoveService_Click;
         this.Controls.Add(btnRemoveService);

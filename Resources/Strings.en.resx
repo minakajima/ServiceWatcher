@@ -290,7 +290,7 @@ Please add monitored services using the "Manage Services" button.</value>
     <value>seconds</value>
   </data>
   <data name="SettingsForm_SecondsWithNote" xml:space="preserve">
-    <value>seconds (0=display until manually closed)</value>
+    <value>sec (0=manual close)</value>
   </data>
   <data name="SettingsForm_NotificationDisplayTimeLabel" xml:space="preserve">
     <value>Notification Display Time:</value>

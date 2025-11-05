@@ -148,7 +148,8 @@ public partial class SettingsForm : Form
         {
             Text = "秒（0=手動で閉じるまで表示）",
             Location = new Point(265, 100),
-            AutoSize = true
+            AutoSize = true,
+            MaximumSize = new Size(220, 0)
         };
         grpGeneral.Controls.Add(lblSeconds2);
 
