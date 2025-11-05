@@ -57,7 +57,7 @@ public partial class ServiceListForm : Form
     /// <summary>
     /// Applies localized text to all UI elements.
     /// </summary>
-    private void ApplyLocalization()
+    public void ApplyLocalization()
     {
         if (_localizationService == null)
         {

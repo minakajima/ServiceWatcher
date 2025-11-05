@@ -53,6 +53,9 @@ public partial class SettingsForm : Form
     private bool _startMinimized;
     private bool _autoStartMonitoring;
 
+    // Original language before changes
+    private string _originalLanguage = "ja";
+
     public SettingsForm(ILogger<SettingsForm> logger, ILocalizationService? localizationService = null)
     {
         _logger = logger;
@@ -196,6 +199,7 @@ public partial class SettingsForm : Form
             Size = new Size(90, 30),
             DialogResult = DialogResult.Cancel
         };
+        btnCancel.Click += BtnCancel_Click;
         this.Controls.Add(btnCancel);
 
         this.AcceptButton = btnSave;
@@ -317,6 +321,7 @@ public partial class SettingsForm : Form
             if (root.TryGetProperty("uiLanguage", out var languageProp))
             {
                 _uiLanguage = languageProp.GetString() ?? "ja";
+                _originalLanguage = _uiLanguage; // Save original language
                 var langIndex = _uiLanguage == "en" ? 1 : 0;
                 cmbLanguage.SelectedIndex = langIndex;
             }
@@ -487,5 +492,43 @@ public partial class SettingsForm : Form
                 MessageBoxButtons.OK,
                 MessageBoxIcon.Error);
         }
+    }
+
+    /// <summary>
+    /// Handles cancel button click - restores original language.
+    /// </summary>
+    private void BtnCancel_Click(object? sender, EventArgs e)
+    {
+        // Restore original language if it was changed
+        var currentLanguage = (cmbLanguage.SelectedItem as LanguageItem)?.Code ?? "ja";
+        if (currentLanguage != _originalLanguage && _localizationService != null)
+        {
+            _logger.LogInformation($"Restoring language from {currentLanguage} to {_originalLanguage}");
+            
+            // Restore language in service
+            var result = _localizationService.SetLanguage(_originalLanguage);
+            if (!result.IsSuccess)
+            {
+                _logger.LogWarning("Failed to restore language: {Error}", result.Error);
+            }
+            else
+            {
+                // Apply to all open forms
+                foreach (Form form in Application.OpenForms)
+                {
+                    if (form is MainForm mainForm)
+                    {
+                        mainForm.ApplyLocalization();
+                    }
+                    else if (form is ServiceListForm serviceListForm)
+                    {
+                        serviceListForm.ApplyLocalization();
+                    }
+                }
+            }
+        }
+
+        this.DialogResult = DialogResult.Cancel;
+        this.Close();
     }
 }

@@ -58,7 +58,7 @@ public partial class MainForm : Form
     /// <summary>
     /// Applies localized text to all UI elements.
     /// </summary>
-    private void ApplyLocalization()
+    public void ApplyLocalization()
     {
         // Form title
         this.Text = _localizationService.GetString("MainForm_Title") ?? "サービスウォッチャー";
