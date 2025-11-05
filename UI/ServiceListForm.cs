@@ -16,6 +16,7 @@ public partial class ServiceListForm : Form
 {
     private readonly IServiceMonitor _serviceMonitor;
     private readonly ILogger<ServiceListForm> _logger;
+    private readonly ILocalizationService? _localizationService;
     private DataGridView dgvAllServices = null!;
     private DataGridView dgvMonitoredServices = null!;
     private TextBox txtSearch = null!;
@@ -39,16 +40,45 @@ public partial class ServiceListForm : Form
         public string StartType { get; set; } = string.Empty;
     }
 
-    public ServiceListForm(IServiceMonitor serviceMonitor, ILogger<ServiceListForm> logger)
+    public ServiceListForm(IServiceMonitor serviceMonitor, ILogger<ServiceListForm> logger, ILocalizationService? localizationService = null)
     {
         _serviceMonitor = serviceMonitor;
         _logger = logger;
+        _localizationService = localizationService;
         _allServices = new List<ServiceInfo>();
         _monitoredServices = new List<MonitoredService>();
         
         InitializeComponent();
+        ApplyLocalization();
         LoadAllServices();
         LoadMonitoredServices();
+    }
+
+    /// <summary>
+    /// Applies localized text to all UI elements.
+    /// </summary>
+    private void ApplyLocalization()
+    {
+        if (_localizationService == null)
+        {
+            return;
+        }
+
+        // Form title
+        this.Text = _localizationService.GetString("ServiceListForm_Title") ?? "サービス一覧 - ServiceWatcher";
+
+        // Labels
+        lblSearch.Text = _localizationService.GetString("ServiceListForm_SearchLabel") ?? "検索:";
+        lblAllServices.Text = _localizationService.GetString("ServiceListForm_AvailableServicesLabel") ?? "利用可能なサービス:";
+        lblMonitoredServices.Text = _localizationService.GetString("ServiceListForm_MonitoredServicesLabel") ?? "監視対象サービス:";
+
+        // TextBox placeholder
+        txtSearch.PlaceholderText = _localizationService.GetString("ServiceListForm_SearchPlaceholder") ?? "サービス名または表示名で検索...";
+
+        // Buttons
+        btnAddService.Text = _localizationService.GetString("ServiceListForm_AddButton") ?? "監視対象に追加 ▼";
+        btnRemoveService.Text = _localizationService.GetString("ServiceListForm_RemoveButton") ?? "監視対象から削除";
+        btnClose.Text = _localizationService.GetString("ServiceListForm_CloseButton") ?? "閉じる";
     }
 
     private void InitializeComponent()
@@ -179,8 +209,8 @@ public partial class ServiceListForm : Form
         {
             _logger.LogError(ex, "Failed to load services");
             MessageBox.Show(
-                $"サービス一覧の読み込みに失敗しました: {ex.Message}",
-                "エラー",
+                _localizationService?.GetFormattedString("ServiceListForm_LoadServicesFailedMessage", ex.Message) ?? $"サービス一覧の読み込みに失敗しました: {ex.Message}",
+                _localizationService?.GetString("Error_Title") ?? "エラー",
                 MessageBoxButtons.OK,
                 MessageBoxIcon.Error);
         }
@@ -205,10 +235,10 @@ public partial class ServiceListForm : Form
         
         if (dgvAllServices.Columns.Count > 0)
         {
-            dgvAllServices.Columns["ServiceName"].HeaderText = "サービス名";
-            dgvAllServices.Columns["DisplayName"].HeaderText = "表示名";
-            dgvAllServices.Columns["Status"].HeaderText = "状態";
-            dgvAllServices.Columns["StartType"].HeaderText = "スタートアップの種類";
+            dgvAllServices.Columns["ServiceName"].HeaderText = _localizationService?.GetString("ServiceListForm_ColumnServiceName") ?? "サービス名";
+            dgvAllServices.Columns["DisplayName"].HeaderText = _localizationService?.GetString("ServiceListForm_ColumnDisplayName") ?? "表示名";
+            dgvAllServices.Columns["Status"].HeaderText = _localizationService?.GetString("ServiceListForm_ColumnStatus") ?? "状態";
+            dgvAllServices.Columns["StartType"].HeaderText = _localizationService?.GetString("ServiceListForm_ColumnStartType") ?? "スタートアップの種類";
         }
     }
 
@@ -250,11 +280,14 @@ public partial class ServiceListForm : Form
                 }
             }
             
+            var enabledText = _localizationService?.GetString("ServiceListForm_Enabled") ?? "有効";
+            var disabledText = _localizationService?.GetString("ServiceListForm_Disabled") ?? "無効";
+            
             return new
             {
                 ServiceName = m.ServiceName,
                 DisplayName = m.DisplayName,
-                NotificationEnabled = m.NotificationEnabled ? "有効" : "無効",
+                NotificationEnabled = m.NotificationEnabled ? enabledText : disabledText,
                 LastStatus = status
             };
         }).ToList();
@@ -263,10 +296,10 @@ public partial class ServiceListForm : Form
 
         if (dgvMonitoredServices.Columns.Count > 0)
         {
-            dgvMonitoredServices.Columns["ServiceName"].HeaderText = "サービス名";
-            dgvMonitoredServices.Columns["DisplayName"].HeaderText = "表示名";
-            dgvMonitoredServices.Columns["NotificationEnabled"].HeaderText = "通知";
-            dgvMonitoredServices.Columns["LastStatus"].HeaderText = "状態";
+            dgvMonitoredServices.Columns["ServiceName"].HeaderText = _localizationService?.GetString("ServiceListForm_ColumnServiceName") ?? "サービス名";
+            dgvMonitoredServices.Columns["DisplayName"].HeaderText = _localizationService?.GetString("ServiceListForm_ColumnDisplayName") ?? "表示名";
+            dgvMonitoredServices.Columns["NotificationEnabled"].HeaderText = _localizationService?.GetString("ServiceListForm_ColumnNotification") ?? "通知";
+            dgvMonitoredServices.Columns["LastStatus"].HeaderText = _localizationService?.GetString("ServiceListForm_ColumnStatus") ?? "状態";
         }
     }
 
@@ -299,7 +332,11 @@ public partial class ServiceListForm : Form
     {
         if (dgvAllServices.SelectedRows.Count == 0)
         {
-            MessageBox.Show("サービスを選択してください。", "情報", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            MessageBox.Show(
+                _localizationService?.GetString("ServiceListForm_SelectServicePrompt") ?? "サービスを選択してください。",
+                _localizationService?.GetString("ServiceListForm_InfoTitle") ?? "情報",
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Information);
             return;
         }
 
@@ -314,8 +351,8 @@ public partial class ServiceListForm : Form
         if (_monitoredServices.Any(m => m.ServiceName.Equals(serviceName, StringComparison.OrdinalIgnoreCase)))
         {
             MessageBox.Show(
-                $"サービス '{displayName}' は既に監視対象に含まれています。",
-                "情報",
+                _localizationService?.GetFormattedString("ServiceListForm_AlreadyMonitoredMessage", displayName!) ?? $"サービス '{displayName}' は既に監視対象に含まれています。",
+                _localizationService?.GetString("ServiceListForm_InfoTitle") ?? "情報",
                 MessageBoxButtons.OK,
                 MessageBoxIcon.Information);
             return;
@@ -336,8 +373,8 @@ public partial class ServiceListForm : Form
             UpdateMonitoredServicesGrid();
             
             MessageBox.Show(
-                $"サービス '{displayName}' を監視対象に追加しました。",
-                "成功",
+                _localizationService?.GetFormattedString("ServiceListForm_AddSuccessMessage", displayName!) ?? $"サービス '{displayName}' を監視対象に追加しました。",
+                _localizationService?.GetString("ServiceListForm_SuccessTitle") ?? "成功",
                 MessageBoxButtons.OK,
                 MessageBoxIcon.Information);
 
@@ -352,7 +389,11 @@ public partial class ServiceListForm : Form
     {
         if (dgvMonitoredServices.SelectedRows.Count == 0)
         {
-            MessageBox.Show("監視対象サービスを選択してください。", "情報", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            MessageBox.Show(
+                _localizationService?.GetString("ServiceListForm_SelectMonitoredServicePrompt") ?? "監視対象サービスを選択してください。",
+                _localizationService?.GetString("ServiceListForm_InfoTitle") ?? "情報",
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Information);
             return;
         }
 
@@ -364,8 +405,8 @@ public partial class ServiceListForm : Form
             return;
 
         var result = MessageBox.Show(
-            $"サービス '{displayName}' を監視対象から削除しますか？",
-            "確認",
+            _localizationService?.GetFormattedString("ServiceListForm_RemoveConfirmMessage", displayName!) ?? $"サービス '{displayName}' を監視対象から削除しますか？",
+            _localizationService?.GetString("ServiceListForm_ConfirmTitle") ?? "確認",
             MessageBoxButtons.YesNo,
             MessageBoxIcon.Question);
 
@@ -379,8 +420,8 @@ public partial class ServiceListForm : Form
             UpdateMonitoredServicesGrid();
 
             MessageBox.Show(
-                $"サービス '{displayName}' を監視対象から削除しました。",
-                "成功",
+                _localizationService?.GetFormattedString("ServiceListForm_RemoveSuccessMessage", displayName!) ?? $"サービス '{displayName}' を監視対象から削除しました。",
+                _localizationService?.GetString("ServiceListForm_SuccessTitle") ?? "成功",
                 MessageBoxButtons.OK,
                 MessageBoxIcon.Information);
 
@@ -417,7 +458,11 @@ public partial class ServiceListForm : Form
             var writableResult = ConfigurationHelper.IsConfigWritable(configPath, _logger);
             if (!writableResult.IsSuccess)
             {
-                MessageBox.Show(writableResult.Error, "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(
+                    writableResult.Error,
+                    _localizationService?.GetString("Error_Title") ?? "エラー",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Error);
                 return false;
             }
 
@@ -428,8 +473,8 @@ public partial class ServiceListForm : Form
                 if (!validateResult.IsSuccess)
                 {
                     var result = MessageBox.Show(
-                        validateResult.Error + "\n\nバックアップから復元しますか？",
-                        "設定ファイルエラー",
+                        validateResult.Error + "\n\n" + (_localizationService?.GetString("ServiceListForm_RestorePrompt") ?? "バックアップから復元しますか？"),
+                        _localizationService?.GetString("ServiceListForm_ConfigErrorTitle") ?? "設定ファイルエラー",
                         MessageBoxButtons.YesNo,
                         MessageBoxIcon.Warning);
 
@@ -438,7 +483,11 @@ public partial class ServiceListForm : Form
                         var restoreResult = ConfigurationHelper.RestoreFromBackup(configPath, _logger);
                         if (!restoreResult.IsSuccess)
                         {
-                            MessageBox.Show(restoreResult.Error, "復元失敗", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            MessageBox.Show(
+                                restoreResult.Error,
+                                _localizationService?.GetString("ServiceListForm_RestoreFailedTitle") ?? "復元失敗",
+                                MessageBoxButtons.OK,
+                                MessageBoxIcon.Error);
                             return false;
                         }
                     }
@@ -454,7 +503,11 @@ public partial class ServiceListForm : Form
                 var createResult = ConfigurationHelper.CreateDefaultConfig(configPath, _logger);
                 if (!createResult.IsSuccess)
                 {
-                    MessageBox.Show(createResult.Error, "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show(
+                        createResult.Error,
+                        _localizationService?.GetString("Error_Title") ?? "エラー",
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Error);
                     return false;
                 }
             }
@@ -505,8 +558,8 @@ public partial class ServiceListForm : Form
         {
             _logger.LogError(ex, "Failed to save monitored service");
             MessageBox.Show(
-                $"設定の保存に失敗しました: {ex.Message}",
-                "エラー",
+                _localizationService?.GetFormattedString("ServiceListForm_SaveFailedMessage", ex.Message) ?? $"設定の保存に失敗しました: {ex.Message}",
+                _localizationService?.GetString("Error_Title") ?? "エラー",
                 MessageBoxButtons.OK,
                 MessageBoxIcon.Error);
             return false;
@@ -526,13 +579,21 @@ public partial class ServiceListForm : Form
             var writableResult = ConfigurationHelper.IsConfigWritable(configPath, _logger);
             if (!writableResult.IsSuccess)
             {
-                MessageBox.Show(writableResult.Error, "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(
+                    writableResult.Error,
+                    _localizationService?.GetString("Error_Title") ?? "エラー",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Error);
                 return false;
             }
 
             if (!File.Exists(configPath))
             {
-                MessageBox.Show("config.jsonファイルが見つかりません。", "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(
+                    _localizationService?.GetString("ServiceListForm_ConfigNotFoundMessage") ?? "config.jsonファイルが見つかりません。",
+                    _localizationService?.GetString("Error_Title") ?? "エラー",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Error);
                 return false;
             }
 
@@ -579,8 +640,8 @@ public partial class ServiceListForm : Form
         {
             _logger.LogError(ex, "Failed to remove monitored service");
             MessageBox.Show(
-                $"設定の削除に失敗しました: {ex.Message}",
-                "エラー",
+                _localizationService?.GetFormattedString("ServiceListForm_RemoveFailedMessage", ex.Message) ?? $"設定の削除に失敗しました: {ex.Message}",
+                _localizationService?.GetString("Error_Title") ?? "エラー",
                 MessageBoxButtons.OK,
                 MessageBoxIcon.Error);
             return false;

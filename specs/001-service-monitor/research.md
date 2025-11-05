@@ -292,9 +292,58 @@ All questions from Technical Context have been resolved:
 ✅ **Constraints**: No admin required, offline, polling-based  
 ✅ **Scale/Scope**: 50 services max, single-user desktop app
 
+## 7. Internationalization (i18n) Strategy
+
+**Decision**: Use .NET Resource Files (.resx) with System.Globalization.CultureInfo
+
+**Rationale**:
+- Native .NET localization mechanism with Visual Studio designer support
+- ResourceManager automatically selects resources based on CurrentUICulture
+- Each language has separate .resx file (e.g., Strings.ja.resx, Strings.en.resx)
+- Runtime language switching via Thread.CurrentThread.CurrentUICulture + UI refresh
+- Windows Forms controls support `Localizable=true` property for designer-based translation
+
+**Alternatives Considered**:
+- **JSON translation files**: Not integrated with .NET ecosystem, requires manual implementation
+- **Database translation tables**: Over-engineering, violates offline requirement
+- **Hardcoded string branching**: Unmaintainable, not scalable
+
+**Implementation Strategy**:
+```csharp
+// Language switching
+Thread.CurrentThread.CurrentUICulture = new CultureInfo("ja"); // or "en"
+
+// Re-apply resources to all open forms
+ComponentResourceManager resources = new ComponentResourceManager(typeof(MainForm));
+resources.ApplyResources(this, "$this");
+// Recursively apply to child controls
+foreach (Control control in Controls) {
+    resources.ApplyResources(control, control.Name);
+}
+```
+
+**Language Detection**:
+- First launch: Detect OS language via `CultureInfo.CurrentUICulture`
+- If OS language is Japanese → default to "ja"
+- All other languages → fallback to "en"
+- User selection saved in config.json takes precedence
+
+**Translation Scope**:
+- All UI elements (forms, labels, buttons, menus)
+- Notification messages
+- Error messages
+- Log messages (optional, for debugging)
+
+**Performance Consideration**:
+- Resource loading is cached by ResourceManager
+- ApplyResources is lightweight (~100ms for typical form)
+- Language switch completes in <1 second (SC-008 requirement)
+
 ## References
 
 - [ServiceController Class Documentation](https://learn.microsoft.com/en-us/dotnet/api/system.serviceprocess.servicecontroller)
 - [System.Text.Json Documentation](https://learn.microsoft.com/en-us/dotnet/standard/serialization/system-text-json-overview)
 - [Windows Forms Documentation](https://learn.microsoft.com/en-us/dotnet/desktop/winforms/)
 - [Microsoft.Extensions.Logging Documentation](https://learn.microsoft.com/en-us/dotnet/core/extensions/logging)
+- [.NET Localization Documentation](https://learn.microsoft.com/en-us/dotnet/core/extensions/localization)
+- [CultureInfo Class Documentation](https://learn.microsoft.com/en-us/dotnet/api/system.globalization.cultureinfo)

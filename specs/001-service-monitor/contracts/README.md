@@ -14,7 +14,8 @@ This directory contains internal API contracts for the Windows Service Monitorin
 1. **IServiceMonitor.md** - Service monitoring operations
 2. **IConfigurationManager.md** - Configuration persistence operations
 3. **INotificationService.md** - User notification operations
-4. **ILogger.md** - Logging abstraction (uses Microsoft.Extensions.Logging)
+4. **ILocalizationService.md** - UI localization and language switching (added 2025-11-05)
+5. **ILogger.md** - Logging abstraction (uses Microsoft.Extensions.Logging)
 
 ## Architecture Layers
 

@@ -1,0 +1,421 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" use="optional" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  
+  <!-- MainForm -->
+  <data name="MainForm_Title" xml:space="preserve">
+    <value>Service Watcher</value>
+  </data>
+  <data name="MainForm_StartButton" xml:space="preserve">
+    <value>Start Monitoring</value>
+  </data>
+  <data name="MainForm_StopButton" xml:space="preserve">
+    <value>Stop Monitoring</value>
+  </data>
+  <data name="MainForm_ManageServicesButton" xml:space="preserve">
+    <value>Manage Services</value>
+  </data>
+  <data name="MainForm_SettingsButton" xml:space="preserve">
+    <value>Settings</value>
+  </data>
+  <data name="MainForm_StatusReady" xml:space="preserve">
+    <value>Ready</value>
+  </data>
+  <data name="MainForm_StatusMonitoring" xml:space="preserve">
+    <value>Monitoring - {0} services</value>
+  </data>
+  <data name="MainForm_StatusStopped" xml:space="preserve">
+    <value>Monitoring stopped</value>
+  </data>
+  <data name="MainForm_StatusError" xml:space="preserve">
+    <value>Error: {0}</value>
+  </data>
+  <data name="MainForm_RefreshButton" xml:space="preserve">
+    <value>Refresh</value>
+  </data>
+  <data name="MainForm_MonitoredServicesLabel" xml:space="preserve">
+    <value>Monitored Services:</value>
+  </data>
+  <data name="MainForm_ColumnServiceName" xml:space="preserve">
+    <value>Service Name</value>
+  </data>
+  <data name="MainForm_ColumnDisplayName" xml:space="preserve">
+    <value>Display Name</value>
+  </data>
+  <data name="MainForm_ColumnNotification" xml:space="preserve">
+    <value>Notification</value>
+  </data>
+  <data name="MainForm_ColumnStatus" xml:space="preserve">
+    <value>Status</value>
+  </data>
+  <data name="MainForm_Enabled" xml:space="preserve">
+    <value>Enabled</value>
+  </data>
+  <data name="MainForm_Disabled" xml:space="preserve">
+    <value>Disabled</value>
+  </data>
+  
+  <!-- ServiceListForm -->
+  <data name="ServiceListForm_Title" xml:space="preserve">
+    <value>Service List - ServiceWatcher</value>
+  </data>
+  <data name="ServiceListForm_SearchLabel" xml:space="preserve">
+    <value>Search:</value>
+  </data>
+  <data name="ServiceListForm_SearchPlaceholder" xml:space="preserve">
+    <value>Search by service name or display name...</value>
+  </data>
+  <data name="ServiceListForm_AddButton" xml:space="preserve">
+    <value>Add to Monitoring ▼</value>
+  </data>
+  <data name="ServiceListForm_RemoveButton" xml:space="preserve">
+    <value>Remove from Monitoring</value>
+  </data>
+  <data name="ServiceListForm_CloseButton" xml:space="preserve">
+    <value>Close</value>
+  </data>
+  <data name="ServiceListForm_AllServicesLabel" xml:space="preserve">
+    <value>Available Services</value>
+  </data>
+  <data name="ServiceListForm_AvailableServicesLabel" xml:space="preserve">
+    <value>Available Services:</value>
+  </data>
+  <data name="ServiceListForm_MonitoredServicesLabel" xml:space="preserve">
+    <value>Monitored Services:</value>
+  </data>
+  <data name="ServiceListForm_ColumnServiceName" xml:space="preserve">
+    <value>Service Name</value>
+  </data>
+  <data name="ServiceListForm_ColumnDisplayName" xml:space="preserve">
+    <value>Display Name</value>
+  </data>
+  <data name="ServiceListForm_ColumnStatus" xml:space="preserve">
+    <value>Status</value>
+  </data>
+  <data name="ServiceListForm_ColumnStartType" xml:space="preserve">
+    <value>Startup Type</value>
+  </data>
+  <data name="ServiceListForm_ColumnNotification" xml:space="preserve">
+    <value>Notification</value>
+  </data>
+  <data name="ServiceListForm_Enabled" xml:space="preserve">
+    <value>Enabled</value>
+  </data>
+  <data name="ServiceListForm_Disabled" xml:space="preserve">
+    <value>Disabled</value>
+  </data>
+  <data name="ServiceListForm_LoadServicesFailedMessage" xml:space="preserve">
+    <value>Failed to load service list: {0}</value>
+  </data>
+  <data name="ServiceListForm_SelectServicePrompt" xml:space="preserve">
+    <value>Please select a service.</value>
+  </data>
+  <data name="ServiceListForm_InfoTitle" xml:space="preserve">
+    <value>Information</value>
+  </data>
+  <data name="ServiceListForm_AlreadyMonitoredMessage" xml:space="preserve">
+    <value>Service '{0}' is already being monitored.</value>
+  </data>
+  <data name="ServiceListForm_AddSuccessMessage" xml:space="preserve">
+    <value>Service '{0}' has been added to monitoring.</value>
+  </data>
+  <data name="ServiceListForm_SuccessTitle" xml:space="preserve">
+    <value>Success</value>
+  </data>
+  <data name="ServiceListForm_SelectMonitoredServicePrompt" xml:space="preserve">
+    <value>Please select a monitored service.</value>
+  </data>
+  <data name="ServiceListForm_RemoveConfirmMessage" xml:space="preserve">
+    <value>Remove service '{0}' from monitoring?</value>
+  </data>
+  <data name="ServiceListForm_ConfirmTitle" xml:space="preserve">
+    <value>Confirm</value>
+  </data>
+  <data name="ServiceListForm_RemoveSuccessMessage" xml:space="preserve">
+    <value>Service '{0}' has been removed from monitoring.</value>
+  </data>
+  <data name="ServiceListForm_RestorePrompt" xml:space="preserve">
+    <value>Do you want to restore from backup?</value>
+  </data>
+  <data name="ServiceListForm_ConfigErrorTitle" xml:space="preserve">
+    <value>Configuration File Error</value>
+  </data>
+  <data name="ServiceListForm_RestoreFailedTitle" xml:space="preserve">
+    <value>Restore Failed</value>
+  </data>
+  <data name="ServiceListForm_SaveFailedMessage" xml:space="preserve">
+    <value>Failed to save configuration: {0}</value>
+  </data>
+  <data name="ServiceListForm_ConfigNotFoundMessage" xml:space="preserve">
+    <value>config.json file not found.</value>
+  </data>
+  <data name="ServiceListForm_RemoveFailedMessage" xml:space="preserve">
+    <value>Failed to remove configuration: {0}</value>
+  </data>
+  
+  <!-- MainForm Messages -->
+  <data name="MainForm_ConfigNotFoundMessage" xml:space="preserve">
+    <value>config.json file not found.
+
+Would you like to create a default configuration file?</value>
+  </data>
+  <data name="MainForm_ConfigNotFoundTitle" xml:space="preserve">
+    <value>Configuration File Not Found</value>
+  </data>
+  <data name="MainForm_ConfigErrorTitle" xml:space="preserve">
+    <value>Configuration File Error</value>
+  </data>
+  <data name="MainForm_RestoreFromBackupPrompt" xml:space="preserve">
+    <value>Restore from backup?</value>
+  </data>
+  <data name="MainForm_RestoreFailedTitle" xml:space="preserve">
+    <value>Restore Failed</value>
+  </data>
+  <data name="MainForm_NoServicesConfiguredMessage" xml:space="preserve">
+    <value>No services configured in config.json.
+
+Please add monitored services using the "Manage Services" button.</value>
+  </data>
+  <data name="MainForm_StopMonitoringFailed" xml:space="preserve">
+    <value>Failed to stop monitoring</value>
+  </data>
+  
+  <!-- SettingsForm -->
+  <data name="SettingsForm_Title" xml:space="preserve">
+    <value>Settings - ServiceWatcher</value>
+  </data>
+  <data name="SettingsForm_LanguageLabel" xml:space="preserve">
+    <value>Language:</value>
+  </data>
+  <data name="SettingsForm_MonitoringIntervalLabel" xml:space="preserve">
+    <value>Monitoring Interval:</value>
+  </data>
+  <data name="SettingsForm_NotificationDurationLabel" xml:space="preserve">
+    <value>Notification Duration:</value>
+  </data>
+  <data name="SettingsForm_SaveButton" xml:space="preserve">
+    <value>Save</value>
+  </data>
+  <data name="SettingsForm_CancelButton" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
+  <data name="SettingsForm_LoadFailedMessage" xml:space="preserve">
+    <value>Failed to load configuration file: {0}</value>
+  </data>
+  <data name="SettingsForm_WarningTitle" xml:space="preserve">
+    <value>Warning</value>
+  </data>
+  <data name="SettingsForm_RestorePrompt" xml:space="preserve">
+    <value>Do you want to restore from backup?</value>
+  </data>
+  <data name="SettingsForm_ConfigErrorTitle" xml:space="preserve">
+    <value>Configuration File Error</value>
+  </data>
+  <data name="SettingsForm_LoadFailedShort" xml:space="preserve">
+    <value>Failed to load configuration file.</value>
+  </data>
+  <data name="SettingsForm_SaveSuccessMessage" xml:space="preserve">
+    <value>Settings saved successfully.</value>
+  </data>
+  <data name="SettingsForm_SuccessTitle" xml:space="preserve">
+    <value>Success</value>
+  </data>
+  <data name="SettingsForm_SaveFailedMessage" xml:space="preserve">
+    <value>Failed to save settings.</value>
+  </data>
+  <data name="SettingsForm_RestoreFailed" xml:space="preserve">
+    <value>Restore Failed</value>
+  </data>
+  <data name="SettingsForm_ValidationError" xml:space="preserve">
+    <value>Validation Error</value>
+  </data>
+  <data name="SettingsForm_SecondsLabel" xml:space="preserve">
+    <value>seconds</value>
+  </data>
+  <data name="SettingsForm_SecondsWithNote" xml:space="preserve">
+    <value>seconds (0=display until manually closed)</value>
+  </data>
+  <data name="SettingsForm_NotificationDisplayTimeLabel" xml:space="preserve">
+    <value>Notification Display Time:</value>
+  </data>
+  <data name="SettingsForm_GeneralGroup" xml:space="preserve">
+    <value>General Settings</value>
+  </data>
+  <data name="SettingsForm_StartupGroup" xml:space="preserve">
+    <value>Startup Settings</value>
+  </data>
+  <data name="SettingsForm_StartMinimized" xml:space="preserve">
+    <value>Start minimized</value>
+  </data>
+  <data name="SettingsForm_StartMinimizedCheckbox" xml:space="preserve">
+    <value>Start minimized</value>
+  </data>
+  <data name="SettingsForm_AutoStartMonitoring" xml:space="preserve">
+    <value>Auto-start monitoring</value>
+  </data>
+  <data name="SettingsForm_AutoStartMonitoringCheckbox" xml:space="preserve">
+    <value>Automatically start monitoring on startup</value>
+  </data>
+  
+  <!-- NotificationForm -->
+  <data name="NotificationForm_Title" xml:space="preserve">
+    <value>Service Stopped Notification</value>
+  </data>
+  <data name="NotificationForm_TitleWithService" xml:space="preserve">
+    <value>Service Stopped Notification: {0}</value>
+  </data>
+  <data name="NotificationForm_ServiceStopped" xml:space="preserve">
+    <value>{0} has stopped</value>
+  </data>
+  <data name="NotificationForm_StoppedAt" xml:space="preserve">
+    <value>Stopped at: {0:HH:mm:ss}</value>
+  </data>
+  <data name="NotificationForm_Message" xml:space="preserve">
+    <value>Service '{0}' has stopped.
+
+Previous status: {1}
+Current status: {2}
+Detected at: {3:yyyy-MM-dd HH:mm:ss}</value>
+  </data>
+  <data name="NotificationForm_CloseButton" xml:space="preserve">
+    <value>Close</value>
+  </data>
+  
+  <!-- Language Names -->
+  <data name="Language_Japanese" xml:space="preserve">
+    <value>日本語</value>
+  </data>
+  <data name="Language_English" xml:space="preserve">
+    <value>English</value>
+  </data>
+  
+  <!-- Messages -->
+  <data name="Message_ConfigLoadError" xml:space="preserve">
+    <value>Failed to load configuration: {0}</value>
+  </data>
+  <data name="Message_ConfigSaveError" xml:space="preserve">
+    <value>Failed to save configuration: {0}</value>
+  </data>
+  <data name="Message_MonitoringStarted" xml:space="preserve">
+    <value>Monitoring started</value>
+  </data>
+  <data name="Message_MonitoringStopped" xml:space="preserve">
+    <value>Monitoring stopped</value>
+  </data>
+  <data name="Message_ServiceAddedSuccess" xml:space="preserve">
+    <value>Service {0} added to monitoring list</value>
+  </data>
+  <data name="Message_ServiceRemovedSuccess" xml:space="preserve">
+    <value>Service {0} removed from monitoring list</value>
+  </data>
+  <data name="Message_InvalidLanguage" xml:space="preserve">
+    <value>Invalid language code: {0}</value>
+  </data>
+  <data name="Message_LanguageChanged" xml:space="preserve">
+    <value>Language changed</value>
+  </data>
+  <data name="MainForm_Ready" xml:space="preserve">
+    <value>Ready</value>
+  </data>
+  <data name="Error_SettingsFormFailed" xml:space="preserve">
+    <value>Failed to open settings form</value>
+  </data>
+  <data name="Error_ServiceListFormFailed" xml:space="preserve">
+    <value>Failed to open service management form</value>
+  </data>
+  <data name="Error_MonitoringStartFailed" xml:space="preserve">
+    <value>Failed to start monitoring</value>
+  </data>
+  <data name="Error_ExceptionOccurred" xml:space="preserve">
+    <value>An error occurred</value>
+  </data>
+  <data name="Error_Title" xml:space="preserve">
+    <value>Error</value>
+  </data>
+  
+  <!-- Validation Messages -->
+  <data name="Validation_ConfigNull" xml:space="preserve">
+    <value>Configuration is null</value>
+  </data>
+  <data name="Validation_IntervalTooShort" xml:space="preserve">
+    <value>Monitoring interval must be at least 1 second</value>
+  </data>
+  <data name="Validation_IntervalTooLong" xml:space="preserve">
+    <value>Monitoring interval must be 3600 seconds (1 hour) or less</value>
+  </data>
+  <data name="Validation_NotificationTimeNegative" xml:space="preserve">
+    <value>Notification display time must be 0 seconds or more (0 = manual close)</value>
+  </data>
+  <data name="Validation_NotificationTimeTooLong" xml:space="preserve">
+    <value>Notification display time must be 300 seconds (5 minutes) or less</value>
+  </data>
+  <data name="Validation_ServiceNameEmpty" xml:space="preserve">
+    <value>Service[{0}]: ServiceName is empty</value>
+  </data>
+  <data name="Validation_DisplayNameEmpty" xml:space="preserve">
+    <value>Service[{0}]: DisplayName is empty</value>
+  </data>
+  <data name="Validation_DuplicateService" xml:space="preserve">
+    <value>Duplicate service name: {0}</value>
+  </data>
+  <data name="Validation_TooManyServices" xml:space="preserve">
+    <value>Number of monitored services must be 100 or less</value>
+  </data>
+</root>

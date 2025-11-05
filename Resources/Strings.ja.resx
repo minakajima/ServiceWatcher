@@ -1,0 +1,421 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" use="optional" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  
+  <!-- MainForm -->
+  <data name="MainForm_Title" xml:space="preserve">
+    <value>サービスウォッチャー</value>
+  </data>
+  <data name="MainForm_StartButton" xml:space="preserve">
+    <value>監視開始</value>
+  </data>
+  <data name="MainForm_StopButton" xml:space="preserve">
+    <value>監視停止</value>
+  </data>
+  <data name="MainForm_ManageServicesButton" xml:space="preserve">
+    <value>サービス管理</value>
+  </data>
+  <data name="MainForm_SettingsButton" xml:space="preserve">
+    <value>設定</value>
+  </data>
+  <data name="MainForm_StatusReady" xml:space="preserve">
+    <value>準備完了</value>
+  </data>
+  <data name="MainForm_StatusMonitoring" xml:space="preserve">
+    <value>監視中 - {0}個のサービス</value>
+  </data>
+  <data name="MainForm_StatusStopped" xml:space="preserve">
+    <value>監視停止</value>
+  </data>
+  <data name="MainForm_StatusError" xml:space="preserve">
+    <value>エラー: {0}</value>
+  </data>
+  <data name="MainForm_RefreshButton" xml:space="preserve">
+    <value>更新</value>
+  </data>
+  <data name="MainForm_MonitoredServicesLabel" xml:space="preserve">
+    <value>監視中のサービス:</value>
+  </data>
+  <data name="MainForm_ColumnServiceName" xml:space="preserve">
+    <value>サービス名</value>
+  </data>
+  <data name="MainForm_ColumnDisplayName" xml:space="preserve">
+    <value>表示名</value>
+  </data>
+  <data name="MainForm_ColumnNotification" xml:space="preserve">
+    <value>通知</value>
+  </data>
+  <data name="MainForm_ColumnStatus" xml:space="preserve">
+    <value>状態</value>
+  </data>
+  <data name="MainForm_Enabled" xml:space="preserve">
+    <value>有効</value>
+  </data>
+  <data name="MainForm_Disabled" xml:space="preserve">
+    <value>無効</value>
+  </data>
+  
+  <!-- ServiceListForm -->
+  <data name="ServiceListForm_Title" xml:space="preserve">
+    <value>サービス一覧 - ServiceWatcher</value>
+  </data>
+  <data name="ServiceListForm_SearchLabel" xml:space="preserve">
+    <value>検索:</value>
+  </data>
+  <data name="ServiceListForm_SearchPlaceholder" xml:space="preserve">
+    <value>サービス名または表示名で検索...</value>
+  </data>
+  <data name="ServiceListForm_AddButton" xml:space="preserve">
+    <value>監視対象に追加 ▼</value>
+  </data>
+  <data name="ServiceListForm_RemoveButton" xml:space="preserve">
+    <value>監視対象から削除</value>
+  </data>
+  <data name="ServiceListForm_CloseButton" xml:space="preserve">
+    <value>閉じる</value>
+  </data>
+  <data name="ServiceListForm_AllServicesLabel" xml:space="preserve">
+    <value>利用可能なサービス</value>
+  </data>
+  <data name="ServiceListForm_AvailableServicesLabel" xml:space="preserve">
+    <value>利用可能なサービス:</value>
+  </data>
+  <data name="ServiceListForm_MonitoredServicesLabel" xml:space="preserve">
+    <value>監視対象サービス:</value>
+  </data>
+  <data name="ServiceListForm_ColumnServiceName" xml:space="preserve">
+    <value>サービス名</value>
+  </data>
+  <data name="ServiceListForm_ColumnDisplayName" xml:space="preserve">
+    <value>表示名</value>
+  </data>
+  <data name="ServiceListForm_ColumnStatus" xml:space="preserve">
+    <value>状態</value>
+  </data>
+  <data name="ServiceListForm_ColumnStartType" xml:space="preserve">
+    <value>スタートアップの種類</value>
+  </data>
+  <data name="ServiceListForm_ColumnNotification" xml:space="preserve">
+    <value>通知</value>
+  </data>
+  <data name="ServiceListForm_Enabled" xml:space="preserve">
+    <value>有効</value>
+  </data>
+  <data name="ServiceListForm_Disabled" xml:space="preserve">
+    <value>無効</value>
+  </data>
+  <data name="ServiceListForm_LoadServicesFailedMessage" xml:space="preserve">
+    <value>サービス一覧の読み込みに失敗しました: {0}</value>
+  </data>
+  <data name="ServiceListForm_SelectServicePrompt" xml:space="preserve">
+    <value>サービスを選択してください。</value>
+  </data>
+  <data name="ServiceListForm_InfoTitle" xml:space="preserve">
+    <value>情報</value>
+  </data>
+  <data name="ServiceListForm_AlreadyMonitoredMessage" xml:space="preserve">
+    <value>サービス '{0}' は既に監視対象に含まれています。</value>
+  </data>
+  <data name="ServiceListForm_AddSuccessMessage" xml:space="preserve">
+    <value>サービス '{0}' を監視対象に追加しました。</value>
+  </data>
+  <data name="ServiceListForm_SuccessTitle" xml:space="preserve">
+    <value>成功</value>
+  </data>
+  <data name="ServiceListForm_SelectMonitoredServicePrompt" xml:space="preserve">
+    <value>監視対象サービスを選択してください。</value>
+  </data>
+  <data name="ServiceListForm_RemoveConfirmMessage" xml:space="preserve">
+    <value>サービス '{0}' を監視対象から削除しますか？</value>
+  </data>
+  <data name="ServiceListForm_ConfirmTitle" xml:space="preserve">
+    <value>確認</value>
+  </data>
+  <data name="ServiceListForm_RemoveSuccessMessage" xml:space="preserve">
+    <value>サービス '{0}' を監視対象から削除しました。</value>
+  </data>
+  <data name="ServiceListForm_RestorePrompt" xml:space="preserve">
+    <value>バックアップから復元しますか？</value>
+  </data>
+  <data name="ServiceListForm_ConfigErrorTitle" xml:space="preserve">
+    <value>設定ファイルエラー</value>
+  </data>
+  <data name="ServiceListForm_RestoreFailedTitle" xml:space="preserve">
+    <value>復元失敗</value>
+  </data>
+  <data name="ServiceListForm_SaveFailedMessage" xml:space="preserve">
+    <value>設定の保存に失敗しました: {0}</value>
+  </data>
+  <data name="ServiceListForm_ConfigNotFoundMessage" xml:space="preserve">
+    <value>config.jsonファイルが見つかりません。</value>
+  </data>
+  <data name="ServiceListForm_RemoveFailedMessage" xml:space="preserve">
+    <value>設定の削除に失敗しました: {0}</value>
+  </data>
+  
+  <!-- MainForm Messages -->
+  <data name="MainForm_ConfigNotFoundMessage" xml:space="preserve">
+    <value>config.jsonファイルが見つかりません。
+
+デフォルトの設定ファイルを作成しますか？</value>
+  </data>
+  <data name="MainForm_ConfigNotFoundTitle" xml:space="preserve">
+    <value>設定ファイルなし</value>
+  </data>
+  <data name="MainForm_ConfigErrorTitle" xml:space="preserve">
+    <value>設定ファイルエラー</value>
+  </data>
+  <data name="MainForm_RestoreFromBackupPrompt" xml:space="preserve">
+    <value>バックアップから復元しますか？</value>
+  </data>
+  <data name="MainForm_RestoreFailedTitle" xml:space="preserve">
+    <value>復元失敗</value>
+  </data>
+  <data name="MainForm_NoServicesConfiguredMessage" xml:space="preserve">
+    <value>config.jsonに監視対象サービスが設定されていません。
+
+「サービス管理」ボタンから監視対象サービスを追加してください。</value>
+  </data>
+  <data name="MainForm_StopMonitoringFailed" xml:space="preserve">
+    <value>監視の停止に失敗しました</value>
+  </data>
+  
+  <!-- SettingsForm -->
+  <data name="SettingsForm_Title" xml:space="preserve">
+    <value>設定 - ServiceWatcher</value>
+  </data>
+  <data name="SettingsForm_LanguageLabel" xml:space="preserve">
+    <value>言語:</value>
+  </data>
+  <data name="SettingsForm_MonitoringIntervalLabel" xml:space="preserve">
+    <value>監視間隔:</value>
+  </data>
+  <data name="SettingsForm_NotificationDurationLabel" xml:space="preserve">
+    <value>通知表示時間:</value>
+  </data>
+  <data name="SettingsForm_SaveButton" xml:space="preserve">
+    <value>保存</value>
+  </data>
+  <data name="SettingsForm_CancelButton" xml:space="preserve">
+    <value>キャンセル</value>
+  </data>
+  <data name="SettingsForm_LoadFailedMessage" xml:space="preserve">
+    <value>設定ファイルの読み込みに失敗しました: {0}</value>
+  </data>
+  <data name="SettingsForm_WarningTitle" xml:space="preserve">
+    <value>警告</value>
+  </data>
+  <data name="SettingsForm_RestorePrompt" xml:space="preserve">
+    <value>バックアップから復元しますか？</value>
+  </data>
+  <data name="SettingsForm_ConfigErrorTitle" xml:space="preserve">
+    <value>設定ファイルエラー</value>
+  </data>
+  <data name="SettingsForm_LoadFailedShort" xml:space="preserve">
+    <value>設定ファイルの読み込みに失敗しました。</value>
+  </data>
+  <data name="SettingsForm_SaveSuccessMessage" xml:space="preserve">
+    <value>設定を保存しました。</value>
+  </data>
+  <data name="SettingsForm_SuccessTitle" xml:space="preserve">
+    <value>成功</value>
+  </data>
+  <data name="SettingsForm_SaveFailedMessage" xml:space="preserve">
+    <value>設定の保存に失敗しました。</value>
+  </data>
+  <data name="SettingsForm_RestoreFailed" xml:space="preserve">
+    <value>復元失敗</value>
+  </data>
+  <data name="SettingsForm_ValidationError" xml:space="preserve">
+    <value>検証エラー</value>
+  </data>
+  <data name="SettingsForm_SecondsLabel" xml:space="preserve">
+    <value>秒</value>
+  </data>
+  <data name="SettingsForm_SecondsWithNote" xml:space="preserve">
+    <value>秒（0=手動で閉じるまで表示）</value>
+  </data>
+  <data name="SettingsForm_NotificationDisplayTimeLabel" xml:space="preserve">
+    <value>通知表示時間:</value>
+  </data>
+  <data name="SettingsForm_GeneralGroup" xml:space="preserve">
+    <value>一般設定</value>
+  </data>
+  <data name="SettingsForm_StartupGroup" xml:space="preserve">
+    <value>起動時設定</value>
+  </data>
+  <data name="SettingsForm_StartMinimized" xml:space="preserve">
+    <value>最小化状態で起動</value>
+  </data>
+  <data name="SettingsForm_StartMinimizedCheckbox" xml:space="preserve">
+    <value>最小化して起動</value>
+  </data>
+  <data name="SettingsForm_AutoStartMonitoring" xml:space="preserve">
+    <value>自動的に監視を開始</value>
+  </data>
+  <data name="SettingsForm_AutoStartMonitoringCheckbox" xml:space="preserve">
+    <value>起動時に自動的に監視を開始</value>
+  </data>
+  
+  <!-- NotificationForm -->
+  <data name="NotificationForm_Title" xml:space="preserve">
+    <value>サービス停止通知</value>
+  </data>
+  <data name="NotificationForm_TitleWithService" xml:space="preserve">
+    <value>サービス停止通知: {0}</value>
+  </data>
+  <data name="NotificationForm_ServiceStopped" xml:space="preserve">
+    <value>{0} が停止しました</value>
+  </data>
+  <data name="NotificationForm_StoppedAt" xml:space="preserve">
+    <value>停止時刻: {0:HH:mm:ss}</value>
+  </data>
+  <data name="NotificationForm_Message" xml:space="preserve">
+    <value>サービス '{0}' が停止しました。
+
+前の状態: {1}
+現在の状態: {2}
+検出時刻: {3:yyyy-MM-dd HH:mm:ss}</value>
+  </data>
+  <data name="NotificationForm_CloseButton" xml:space="preserve">
+    <value>閉じる</value>
+  </data>
+  
+  <!-- Language Names -->
+  <data name="Language_Japanese" xml:space="preserve">
+    <value>日本語</value>
+  </data>
+  <data name="Language_English" xml:space="preserve">
+    <value>English</value>
+  </data>
+  
+  <!-- Messages -->
+  <data name="Message_ConfigLoadError" xml:space="preserve">
+    <value>設定ファイルの読み込みに失敗しました: {0}</value>
+  </data>
+  <data name="Message_ConfigSaveError" xml:space="preserve">
+    <value>設定ファイルの保存に失敗しました: {0}</value>
+  </data>
+  <data name="Message_MonitoringStarted" xml:space="preserve">
+    <value>監視を開始しました</value>
+  </data>
+  <data name="Message_MonitoringStopped" xml:space="preserve">
+    <value>監視を停止しました</value>
+  </data>
+  <data name="Message_ServiceAddedSuccess" xml:space="preserve">
+    <value>サービス {0} を監視対象に追加しました</value>
+  </data>
+  <data name="Message_ServiceRemovedSuccess" xml:space="preserve">
+    <value>サービス {0} を監視対象から削除しました</value>
+  </data>
+  <data name="Message_InvalidLanguage" xml:space="preserve">
+    <value>無効な言語コード: {0}</value>
+  </data>
+  <data name="Message_LanguageChanged" xml:space="preserve">
+    <value>言語を変更しました</value>
+  </data>
+  <data name="MainForm_Ready" xml:space="preserve">
+    <value>準備完了</value>
+  </data>
+  <data name="Error_SettingsFormFailed" xml:space="preserve">
+    <value>設定画面の表示に失敗しました</value>
+  </data>
+  <data name="Error_ServiceListFormFailed" xml:space="preserve">
+    <value>サービス管理画面の表示に失敗しました</value>
+  </data>
+  <data name="Error_MonitoringStartFailed" xml:space="preserve">
+    <value>監視の開始に失敗しました</value>
+  </data>
+  <data name="Error_ExceptionOccurred" xml:space="preserve">
+    <value>エラーが発生しました</value>
+  </data>
+  <data name="Error_Title" xml:space="preserve">
+    <value>エラー</value>
+  </data>
+  
+  <!-- Validation Messages -->
+  <data name="Validation_ConfigNull" xml:space="preserve">
+    <value>設定がnullです</value>
+  </data>
+  <data name="Validation_IntervalTooShort" xml:space="preserve">
+    <value>監視間隔は1秒以上である必要があります</value>
+  </data>
+  <data name="Validation_IntervalTooLong" xml:space="preserve">
+    <value>監視間隔は3600秒(1時間)以下である必要があります</value>
+  </data>
+  <data name="Validation_NotificationTimeNegative" xml:space="preserve">
+    <value>通知表示時間は0秒以上である必要があります(0 = 手動で閉じる)</value>
+  </data>
+  <data name="Validation_NotificationTimeTooLong" xml:space="preserve">
+    <value>通知表示時間は300秒(5分)以下である必要があります</value>
+  </data>
+  <data name="Validation_ServiceNameEmpty" xml:space="preserve">
+    <value>サービス[{0}]: ServiceNameが空です</value>
+  </data>
+  <data name="Validation_DisplayNameEmpty" xml:space="preserve">
+    <value>サービス[{0}]: DisplayNameが空です</value>
+  </data>
+  <data name="Validation_DuplicateService" xml:space="preserve">
+    <value>重複したサービス名: {0}</value>
+  </data>
+  <data name="Validation_TooManyServices" xml:space="preserve">
+    <value>監視サービス数は100個以下である必要があります</value>
+  </data>
+</root>

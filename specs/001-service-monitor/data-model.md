@@ -79,6 +79,7 @@ Represents the application's configuration settings, persisted to a JSON file.
 |----------|------|----------|---------|-------------|
 | MonitoringIntervalSeconds | int | Yes | 5 | Interval between service status checks (seconds) |
 | NotificationDisplayTimeSeconds | int | Yes | 30 | How long to display notification popups (seconds) |
+| UiLanguage | string | Yes | "ja" or "en" | UI display language (detected from OS on first launch) |
 | MonitoredServices | List<MonitoredService> | Yes | [] | List of services to monitor |
 | ConfigurationVersion | string | Yes | "1.0" | Config file format version |
 | LastModified | DateTime | Yes | DateTime.Now | Last time config was modified |
@@ -92,11 +93,18 @@ public class ApplicationConfiguration
 {
     public int MonitoringIntervalSeconds { get; set; } = 5;
     public int NotificationDisplayTimeSeconds { get; set; } = 30;
+    public string UiLanguage { get; set; } = DetectDefaultLanguage(); // "ja" or "en"
     public List<MonitoredService> MonitoredServices { get; set; } = new();
     public string ConfigurationVersion { get; set; } = "1.0";
     public DateTime LastModified { get; set; } = DateTime.Now;
     public bool StartMinimized { get; set; } = false;
     public bool AutoStartMonitoring { get; set; } = false;
+    
+    private static string DetectDefaultLanguage()
+    {
+        var culture = CultureInfo.CurrentUICulture.TwoLetterISOLanguageName;
+        return culture == "ja" ? "ja" : "en"; // Default to English for non-Japanese OS
+    }
 }
 ```
 
@@ -111,6 +119,11 @@ public class ApplicationConfiguration
   - Min: 5 seconds
   - Max: 300 seconds (5 minutes)
   - 0 = infinite (manual close only)
+
+- **UiLanguage**:
+  - Must be exactly "ja" or "en" (case-sensitive)
+  - Invalid values should fallback to "en"
+  - Auto-detected on first launch based on OS language
 
 - **MonitoredServices**:
   - Max count: 50 services (performance constraint from constitution)

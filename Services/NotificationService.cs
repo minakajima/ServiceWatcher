@@ -10,6 +10,7 @@ namespace ServiceWatcher.Services;
 public class NotificationService : INotificationService
 {
     private readonly ILogger<NotificationService> _logger;
+    private readonly ILocalizationService? _localizationService;
     private readonly SynchronizationContext? _synchronizationContext;
     private readonly Dictionary<string, Form> _activeNotifications;
     private readonly object _lock = new object();
@@ -34,9 +35,10 @@ public class NotificationService : INotificationService
         }
     }
 
-    public NotificationService(ILogger<NotificationService> logger, bool simulate = false)
+    public NotificationService(ILogger<NotificationService> logger, ILocalizationService? localizationService = null, bool simulate = false)
     {
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+        _localizationService = localizationService;
         _synchronizationContext = SynchronizationContext.Current;
         _activeNotifications = new Dictionary<string, Form>(StringComparer.OrdinalIgnoreCase);
         _simulate = simulate;
@@ -116,9 +118,24 @@ public class NotificationService : INotificationService
     /// </summary>
     private void CreateNotificationForm(ServiceStatusChange statusChange, int displayTimeSeconds)
     {
+        var notificationTitle = _localizationService?.GetFormattedString("NotificationForm_TitleWithService", statusChange.DisplayName)
+                                ?? $"サービス停止通知: {statusChange.DisplayName}";
+        
+        var notificationMessage = _localizationService?.GetFormattedString("NotificationForm_Message", 
+                                      statusChange.DisplayName,
+                                      statusChange.PreviousStatus,
+                                      statusChange.CurrentStatus,
+                                      statusChange.DetectedAt)
+                                  ?? $"サービス '{statusChange.DisplayName}' が停止しました。\n\n" +
+                                     $"前の状態: {statusChange.PreviousStatus}\n" +
+                                     $"現在の状態: {statusChange.CurrentStatus}\n" +
+                                     $"検出時刻: {statusChange.DetectedAt:yyyy-MM-dd HH:mm:ss}";
+        
+        var closeButtonText = _localizationService?.GetString("NotificationForm_CloseButton") ?? "閉じる";
+
         var notificationForm = new Form
         {
-            Text = $"サービス停止通知: {statusChange.DisplayName}",
+            Text = notificationTitle,
             Size = new System.Drawing.Size(400, 150),
             StartPosition = FormStartPosition.Manual,
             FormBorderStyle = FormBorderStyle.FixedDialog,
@@ -129,10 +146,7 @@ public class NotificationService : INotificationService
 
         var label = new Label
         {
-            Text = $"サービス '{statusChange.DisplayName}' が停止しました。\n\n" +
-                   $"前の状態: {statusChange.PreviousStatus}\n" +
-                   $"現在の状態: {statusChange.CurrentStatus}\n" +
-                   $"検出時刻: {statusChange.DetectedAt:yyyy-MM-dd HH:mm:ss}",
+            Text = notificationMessage,
             Dock = DockStyle.Fill,
             TextAlign = System.Drawing.ContentAlignment.MiddleCenter,
             Padding = new Padding(10)
@@ -140,7 +154,7 @@ public class NotificationService : INotificationService
 
         var closeButton = new Button
         {
-            Text = "OK",
+            Text = closeButtonText,
             Dock = DockStyle.Bottom,
             Height = 30
         };
