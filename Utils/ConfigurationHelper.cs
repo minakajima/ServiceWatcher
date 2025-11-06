@@ -18,7 +18,7 @@ public static class ConfigurationHelper
             var directory = Path.GetDirectoryName(configPath);
             if (string.IsNullOrEmpty(directory))
             {
-                return Result<string>.Failure("設定ファイルのディレクトリパスが無効です。");
+                return Result<string>.Failure("Configuration file directory path is invalid.");
             }
 
             if (!Directory.Exists(directory))
@@ -32,12 +32,12 @@ public static class ConfigurationHelper
         catch (UnauthorizedAccessException ex)
         {
             logger?.LogError(ex, "Access denied when creating configuration directory");
-            return Result<string>.Failure($"ディレクトリの作成権限がありません: {ex.Message}");
+            return Result<string>.Failure($"Permission denied to create directory: {ex.Message}");
         }
         catch (Exception ex)
         {
             logger?.LogError(ex, "Failed to ensure configuration directory exists");
-            return Result<string>.Failure($"ディレクトリの作成に失敗しました: {ex.Message}");
+            return Result<string>.Failure($"Failed to create directory: {ex.Message}");
         }
     }
 
@@ -66,9 +66,9 @@ public static class ConfigurationHelper
             {
                 logger?.LogWarning($"Configuration file is read-only: {configPath}");
                 return Result<bool>.Failure(
-                    $"設定ファイルが読み取り専用です。\n\n" +
-                    $"ファイル: {configPath}\n\n" +
-                    $"ファイルのプロパティから「読み取り専用」のチェックを外してください。");
+                    $"Configuration file is read-only.\n\n" +
+                    $"File: {configPath}\n\n" +
+                    $"Please uncheck 'Read-only' in the file properties.");
             }
 
             // Try to open for writing
@@ -83,14 +83,14 @@ public static class ConfigurationHelper
         {
             logger?.LogError(ex, "Access denied when checking config file write access");
             return Result<bool>.Failure(
-                $"設定ファイルへのアクセス権がありません。\n\n" +
-                $"ファイル: {configPath}\n\n" +
-                $"管理者権限で実行するか、ファイルのアクセス許可を確認してください。");
+                $"Access denied to configuration file.\n\n" +
+                $"File: {configPath}\n\n" +
+                $"Please run as administrator or check file permissions.");
         }
         catch (Exception ex)
         {
             logger?.LogError(ex, "Failed to check config file write access");
-            return Result<bool>.Failure($"設定ファイルのアクセスチェックに失敗しました: {ex.Message}");
+            return Result<bool>.Failure($"Failed to check configuration file access: {ex.Message}");
         }
     }
 
@@ -104,7 +104,7 @@ public static class ConfigurationHelper
             if (!File.Exists(configPath))
             {
                 logger?.LogWarning($"Configuration file does not exist: {configPath}");
-                return Result<bool>.Failure("設定ファイルが存在しません。");
+                return Result<bool>.Failure("Configuration file does not exist.");
             }
 
             var json = File.ReadAllText(configPath);
@@ -123,8 +123,8 @@ public static class ConfigurationHelper
                 {
                     logger?.LogWarning("Configuration file is missing required properties");
                     return Result<bool>.Failure(
-                        "設定ファイルに必要なプロパティが不足しています。\n\n" +
-                        "必須: monitoringIntervalSeconds, monitoredServices");
+                        "Configuration file is missing required properties.\n\n" +
+                        "Required: monitoringIntervalSeconds, monitoredServices");
                 }
 
                 logger?.LogInformation("Configuration file validation passed");

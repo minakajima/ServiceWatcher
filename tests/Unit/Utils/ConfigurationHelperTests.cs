@@ -97,7 +97,7 @@ public class ConfigurationHelperTests
         var logger = new Mock<ILogger>();
         var result = ConfigurationHelper.ValidateAndRepairConfig(path, logger.Object);
         Assert.False(result.IsSuccess);
-        Assert.Contains("必要なプロパティ", result.Error);
+        Assert.Contains("missing required properties", result.Error);
     }
 
     [Fact]
@@ -117,7 +117,7 @@ public class ConfigurationHelperTests
         var logger = new Mock<ILogger>();
         var result = ConfigurationHelper.ValidateAndRepairConfig(path, logger.Object);
         Assert.False(result.IsSuccess);
-        Assert.Contains("存在しません", result.Error);
+        Assert.Contains("does not exist", result.Error);
     }
 
     [Fact]

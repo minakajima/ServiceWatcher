@@ -10,15 +10,6 @@
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <GenerateTargetFrameworkAttribute>false</GenerateTargetFrameworkAttribute>
     <NoWarn>CA1416</NoWarn>
-    
-    <!-- Version Information -->
-    <Version>1.0.0</Version>
-    <AssemblyVersion>1.0.0.0</AssemblyVersion>
-    <FileVersion>1.0.0.0</FileVersion>
-    <Product>ServiceWatcher</Product>
-    <Description>Windows Service Monitoring Tool</Description>
-    <Company>ServiceWatcher Project</Company>
-    <Copyright>Copyright © 2025</Copyright>
   </PropertyGroup>
 
   <ItemGroup>
@@ -30,6 +21,23 @@
     <Compile Remove="tests\**" />
     <EmbeddedResource Remove="tests\**" />
     <None Remove="tests\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Update="Resources\Strings.ja.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>Strings.ja.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Strings.en.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Strings.en.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="UI\MainForm.ja.resx">
+      <DependentUpon>MainForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Update="UI\MainForm.en.resx">
+      <DependentUpon>MainForm.cs</DependentUpon>
+    </EmbeddedResource>
   </ItemGroup>
 
 </Project>

@@ -550,6 +550,71 @@ Expected output: `ServiceWatcher.exe` in `bin\Debug\net8.0-windows\`
 
 ---
 
+### Scenario 11: Language Switching (i18n)
+
+**Objective**: Verify UI language switching between Japanese and English without restart.
+
+#### Steps
+
+1. **Verify Initial Language**:
+   - Check OS language settings
+   - Launch application
+   - If OS is Japanese → UI should be in Japanese
+   - If OS is English or other → UI should be in English
+
+2. **Open Settings**:
+   - Navigate to Settings screen/dialog
+   - Locate language dropdown control
+
+3. **Switch to English**:
+   - Select "English" from dropdown
+   - Observe UI immediately (no restart)
+   - All labels, buttons, menus should change to English
+   - Time to complete: <1 second (SC-008)
+
+4. **Verify All Elements**:
+   - Main window title
+   - Menu items
+   - Button labels
+   - Status bar text
+   - Notification messages (trigger a service stop event)
+
+5. **Switch Back to Japanese**:
+   - Select "日本語" from dropdown
+   - Verify all UI elements switch back
+   - Time to complete: <1 second
+
+6. **Verify Persistence**:
+   - Close application
+   - Check config.json:
+     ```powershell
+     Get-Content "$env:LOCALAPPDATA\ServiceWatcher\config.json" | ConvertFrom-Json | Select-Object uiLanguage
+     ```
+   - Verify `uiLanguage` matches last selection
+
+7. **Restart Application**:
+   - Launch application again
+   - Verify language persists from config (not reset to OS language)
+
+#### Expected Results
+
+✅ **PASS** if:
+- Language detection works on first launch
+- Language dropdown is accessible in Settings
+- Switching completes in <1 second
+- All UI elements (forms, labels, buttons, notifications) reflect language change immediately
+- Language selection persists across restarts
+- No restart required for change
+
+❌ **FAIL** if:
+- Language switch takes >1 second
+- Some UI elements don't translate
+- Restart required for change to take effect
+- Language doesn't persist in config.json
+- Invalid language in config causes crash
+
+---
+
 ## Testing Checklist
 
 Copy this checklist for each test session:

@@ -29,7 +29,7 @@ public class ConfigurationManagerTests : IDisposable
         _testBackupPath = Path.Combine(tempDir, "config.backup.json");
         
         // Use test-specific path instead of default %LocalAppData%
-        _configManager = new ConfigurationManager(_mockLogger.Object, _testConfigPath);
+        _configManager = new ConfigurationManager(_mockLogger.Object, null, _testConfigPath);
     }
 
     public void Dispose()

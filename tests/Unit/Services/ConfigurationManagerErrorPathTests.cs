@@ -35,7 +35,7 @@ public class ConfigurationManagerErrorPathTests
         await File.WriteAllTextAsync(backupPath, json);
 
         var logger = new Mock<ILogger<ConfigurationManager>>();
-        var mgr = new ConfigurationManager(logger.Object, primaryPath);
+        var mgr = new ConfigurationManager(logger.Object, null, primaryPath);
         var result = await mgr.LoadAsync();
         Assert.True(result.IsSuccess);
         Assert.Equal(5, result.Value.MonitoringIntervalSeconds);
@@ -48,7 +48,7 @@ public class ConfigurationManagerErrorPathTests
         var primaryPath = Path.Combine(dir, "config.json");
         await File.WriteAllTextAsync(primaryPath, "{ invalid json");
         var logger = new Mock<ILogger<ConfigurationManager>>();
-        var mgr = new ConfigurationManager(logger.Object, primaryPath);
+        var mgr = new ConfigurationManager(logger.Object, null, primaryPath);
         var result = await mgr.LoadAsync();
         Assert.True(result.IsSuccess);
         // Default contains Windows Update service
@@ -61,7 +61,7 @@ public class ConfigurationManagerErrorPathTests
         var dir = CreateTempDir();
         var primaryPath = Path.Combine(dir, "config.json");
         var logger = new Mock<ILogger<ConfigurationManager>>();
-        var mgr = new ConfigurationManager(logger.Object, primaryPath);
+        var mgr = new ConfigurationManager(logger.Object, null, primaryPath);
         // Create invalid backup
         var backupPath = Path.Combine(dir, "config.backup.json");
         await File.WriteAllTextAsync(backupPath, "{ invalid json");
@@ -75,7 +75,7 @@ public class ConfigurationManagerErrorPathTests
         var dir = CreateTempDir();
         var primaryPath = Path.Combine(dir, "config.json");
         var logger = new Mock<ILogger<ConfigurationManager>>();
-        var mgr = new ConfigurationManager(logger.Object, primaryPath);
+        var mgr = new ConfigurationManager(logger.Object, null, primaryPath);
 
         // First save a valid config to create backup
         var config = new ApplicationConfiguration

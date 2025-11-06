@@ -1,10 +1,21 @@
-﻿namespace ServiceWatcher.Models;
+﻿using System.Globalization;
+
+namespace ServiceWatcher.Models;
 
 /// <summary>
 /// Represents the application configuration loaded from config.json.
 /// </summary>
 public class ApplicationConfiguration
 {
+    /// <summary>
+    /// Detects the default language based on OS culture.
+    /// </summary>
+    private static string DetectDefaultLanguage()
+    {
+        var culture = CultureInfo.CurrentUICulture.TwoLetterISOLanguageName;
+        return culture.ToLowerInvariant() == "ja" ? "ja" : "en";
+    }
+
     /// <summary>
     /// Gets or sets the monitoring interval in seconds.
     /// </summary>
@@ -14,6 +25,11 @@ public class ApplicationConfiguration
     /// Gets or sets the notification display time in seconds (0 = manual close).
     /// </summary>
     public int NotificationDisplayTimeSeconds { get; set; } = 30;
+
+    /// <summary>
+    /// Gets or sets the UI language ("ja" for Japanese, "en" for English).
+    /// </summary>
+    public string UiLanguage { get; set; } = DetectDefaultLanguage();
 
     /// <summary>
     /// Gets or sets whether to start minimized to system tray.
