@@ -60,6 +60,10 @@ public partial class MainForm : Form
     /// </summary>
     public void ApplyLocalization()
     {
+        // Get version from assembly
+        var version = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version;
+        var versionString = version != null ? $"v{version.Major}.{version.Minor}.{version.Build}.{version.Revision}" : "";
+        
         // Form title
         this.Text = _localizationService.GetString("MainForm_Title") ?? "Service Watcher";
         
@@ -69,8 +73,9 @@ public partial class MainForm : Form
         btnManageServices.Text = _localizationService.GetString("MainForm_ManageServicesButton") ?? "サービス管理";
         btnSettings.Text = _localizationService.GetString("MainForm_SettingsButton") ?? "設定";
         
-        // Labels
-        lblTitle.Text = _localizationService.GetString("MainForm_Title") ?? "Service Watcher";
+        // Labels with version
+        var title = _localizationService.GetString("MainForm_Title") ?? "Service Watcher";
+        lblTitle.Text = string.IsNullOrEmpty(versionString) ? title : $"{title} {versionString}";
         lblMonitoredServices.Text = _localizationService.GetString("MainForm_MonitoredServicesLabel") ?? "監視中のサービス:";
     }
 
