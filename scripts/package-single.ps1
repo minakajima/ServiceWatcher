@@ -91,7 +91,7 @@ if (-not (Test-Path $PublishDir)) { Write-Err "Publish 出力が見つかりま�
 # 6. 出力準備
 $DistRoot = Join-Path $RepoRoot 'dist'
 if (-not (Test-Path $DistRoot)) { New-Item -ItemType Directory -Path $DistRoot | Out-Null }
-$PackageName = "ServiceWatcher-v$Version-win-x64-single"
+$PackageName = "ServiceWatcher-v$Version"
 $PackageDir  = Join-Path $DistRoot $PackageName
 $ZipPath     = "$PackageDir.zip"
 
