@@ -19,12 +19,12 @@ public static class ConfigurationValidator
 
         if (intervalSeconds < 1)
         {
-            errors.Add("監視間隔は1秒以上である必要があります。");
+            errors.Add("Monitoring interval must be at least 1 second.");
         }
 
         if (intervalSeconds > 3600)
         {
-            errors.Add("監視間隔は3600秒（1時間）以下である必要があります。");
+            errors.Add("Monitoring interval must be 3600 seconds (1 hour) or less.");
         }
 
         return new ValidationResult(errors);
@@ -39,12 +39,12 @@ public static class ConfigurationValidator
 
         if (displayTimeSeconds < 0)
         {
-            errors.Add("通知表示時間は0秒以上である必要があります。");
+            errors.Add("Notification display time must be 0 seconds or more.");
         }
 
         if (displayTimeSeconds > 300)
         {
-            errors.Add("通知表示時間は300秒（5分）以下である必要があります。");
+            errors.Add("Notification display time must be 300 seconds (5 minutes) or less.");
         }
 
         return new ValidationResult(errors);
@@ -60,7 +60,7 @@ public static class ConfigurationValidator
         // Check max count
         if (services.Count > 50)
         {
-            errors.Add("監視対象サービスは最大50個までです。");
+            errors.Add("Maximum of 50 monitored services allowed.");
         }
 
         // Check for duplicates
@@ -72,7 +72,7 @@ public static class ConfigurationValidator
 
         if (duplicates.Any())
         {
-            errors.Add($"重複するサービス名があります: {string.Join(", ", duplicates)}");
+            errors.Add($"Duplicate service names found: {string.Join(", ", duplicates)}");
         }
 
         // Check service name length
@@ -83,14 +83,14 @@ public static class ConfigurationValidator
 
         if (tooLongNames.Any())
         {
-            errors.Add($"サービス名が256文字を超えています: {string.Join(", ", tooLongNames.Select(n => n.Substring(0, 50) + "..."))}");
+            errors.Add($"Service names exceed 256 characters: {string.Join(", ", tooLongNames.Select(n => n.Substring(0, 50) + "..."))}");
         }
 
         // Check for empty service names
         var emptyNames = services.Where(s => string.IsNullOrWhiteSpace(s.ServiceName)).ToList();
         if (emptyNames.Any())
         {
-            errors.Add("空のサービス名があります。");
+            errors.Add("Empty service names found.");
         }
 
         return new ValidationResult(errors);

@@ -38,12 +38,31 @@ Push-Location $RepoRoot
 
 # 2. バージョン取得
 if (-not $Version) {
-    $csproj = Join-Path $RepoRoot 'ServiceWatcher.csproj'
-    if (-not (Test-Path $csproj)) { Write-Err "ServiceWatcher.csproj が見つかりません"; exit 1 }
-    $xml = [xml](Get-Content $csproj -Encoding UTF8)
-    $Version = $xml.Project.PropertyGroup.Version
-    if (-not $Version) { Write-Err "csproj に <Version> が定義されていません。-Version で指定してください。"; exit 1 }
-    Write-Info "Version: $Version (csproj から取得)"
+    # まず AssemblyInfo.cs からバージョンを取得
+    $assemblyInfo = Join-Path $RepoRoot 'Properties/AssemblyInfo.cs'
+    if (Test-Path $assemblyInfo) {
+        $content = Get-Content $assemblyInfo -Raw
+        if ($content -match 'AssemblyVersion\("([^"]+)"\)') {
+            $Version = $matches[1]
+            Write-Info "Version: $Version (AssemblyInfo.cs から取得)"
+        }
+    }
+    
+    # AssemblyInfo.cs からバージョンが取得できなかった場合は csproj を確認
+    if (-not $Version) {
+        $csproj = Join-Path $RepoRoot 'ServiceWatcher.csproj'
+        if (-not (Test-Path $csproj)) { Write-Err "ServiceWatcher.csproj が見つかりません"; exit 1 }
+        $xml = [xml](Get-Content $csproj -Encoding UTF8)
+        $Version = $xml.Project.PropertyGroup.Version
+        if ($Version) {
+            Write-Info "Version: $Version (csproj から取得)"
+        }
+    }
+    
+    if (-not $Version) { 
+        Write-Err "バージョンが取得できません。AssemblyInfo.cs または csproj に定義するか、-Version で指定してください。"
+        exit 1 
+    }
 } else {
     Write-Info "Version: $Version (引数指定)"
 }
@@ -72,7 +91,7 @@ if (-not (Test-Path $PublishDir)) { Write-Err "Publish 出力が見つかりま�
 # 6. 出力準備
 $DistRoot = Join-Path $RepoRoot 'dist'
 if (-not (Test-Path $DistRoot)) { New-Item -ItemType Directory -Path $DistRoot | Out-Null }
-$PackageName = "ServiceWatcher-v$Version-win-x64-single"
+$PackageName = "ServiceWatcher-v$Version"
 $PackageDir  = Join-Path $DistRoot $PackageName
 $ZipPath     = "$PackageDir.zip"
 

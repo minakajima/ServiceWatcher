@@ -15,6 +15,7 @@ public partial class MainForm : Form
 {
     private readonly IServiceMonitor _serviceMonitor;
     private readonly INotificationService _notificationService;
+    private readonly ILocalizationService _localizationService;
     private readonly ILogger<MainForm> _logger;
     private CancellationTokenSource? _cancellationTokenSource;
 
@@ -27,15 +28,19 @@ public partial class MainForm : Form
         _logger = loggerFactory.CreateLogger<MainForm>();
         
         // Create services
+        _localizationService = new LocalizationService(loggerFactory.CreateLogger<LocalizationService>());
         _serviceMonitor = new ServiceMonitor(loggerFactory.CreateLogger<ServiceMonitor>());
-        _notificationService = new NotificationService(loggerFactory.CreateLogger<NotificationService>());
+        _notificationService = new NotificationService(loggerFactory.CreateLogger<NotificationService>(), _localizationService);
+        
+        // Apply localization to the form
+        ApplyLocalization();
         
         // Wire events
         _serviceMonitor.ServiceStatusChanged += OnServiceStatusChanged;
         _serviceMonitor.MonitoringError += OnMonitoringError;
         
         // Initialize UI
-        UpdateStatusLabel("準備完了");
+        UpdateStatusLabel(_localizationService.GetString("MainForm_Ready") ?? "準備完了");
         btnStop.Enabled = false;
         RefreshServiceList();
         
@@ -48,6 +53,30 @@ public partial class MainForm : Form
         
         // Apply startup settings
         this.Load += MainForm_Load;
+    }
+
+    /// <summary>
+    /// Applies localized text to all UI elements.
+    /// </summary>
+    public void ApplyLocalization()
+    {
+        // Get version from assembly
+        var version = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version;
+        var versionString = version != null ? $"v{version.Major}.{version.Minor}.{version.Build}.{version.Revision}" : "";
+        
+        // Form title
+        this.Text = _localizationService.GetString("MainForm_Title") ?? "Service Watcher";
+        
+        // Buttons
+        btnStart.Text = _localizationService.GetString("MainForm_StartButton") ?? "監視開始";
+        btnStop.Text = _localizationService.GetString("MainForm_StopButton") ?? "監視停止";
+        btnManageServices.Text = _localizationService.GetString("MainForm_ManageServicesButton") ?? "サービス管理";
+        btnSettings.Text = _localizationService.GetString("MainForm_SettingsButton") ?? "設定";
+        
+        // Labels with version
+        var title = _localizationService.GetString("MainForm_Title") ?? "Service Watcher";
+        lblTitle.Text = string.IsNullOrEmpty(versionString) ? title : $"{title} {versionString}";
+        lblMonitoredServices.Text = _localizationService.GetString("MainForm_MonitoredServicesLabel") ?? "監視中のサービス:";
     }
 
     /// <summary>
@@ -121,9 +150,9 @@ public partial class MainForm : Form
             if (!File.Exists(configPath))
             {
                 var createDialog = MessageBox.Show(
-                    "config.jsonファイルが見つかりません。\n\n" +
-                    "デフォルトの設定ファイルを作成しますか？",
-                    "設定ファイルなし",
+                    _localizationService.GetString("MainForm_ConfigNotFoundMessage") ?? 
+                    "config.jsonファイルが見つかりません。\n\nデフォルトの設定ファイルを作成しますか？",
+                    _localizationService.GetString("MainForm_ConfigNotFoundTitle") ?? "設定ファイルなし",
                     MessageBoxButtons.YesNo,
                     MessageBoxIcon.Question);
 
@@ -132,7 +161,9 @@ public partial class MainForm : Form
                     var createResult = ConfigurationHelper.CreateDefaultConfig(configPath, _logger);
                     if (!createResult.IsSuccess)
                     {
-                        MessageBox.Show(createResult.Error, "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        MessageBox.Show(createResult.Error, 
+                            _localizationService.GetString("Error_Title") ?? "エラー", 
+                            MessageBoxButtons.OK, MessageBoxIcon.Error);
                         return;
                     }
                 }
@@ -146,8 +177,8 @@ public partial class MainForm : Form
             if (!validateResult.IsSuccess)
             {
                 var restoreDialog = MessageBox.Show(
-                    validateResult.Error + "\n\nバックアップから復元しますか？",
-                    "設定ファイルエラー",
+                    validateResult.Error + "\n\n" + (_localizationService.GetString("MainForm_RestoreFromBackupPrompt") ?? "バックアップから復元しますか？"),
+                    _localizationService.GetString("MainForm_ConfigErrorTitle") ?? "設定ファイルエラー",
                     MessageBoxButtons.YesNo,
                     MessageBoxIcon.Warning);
 
@@ -156,7 +187,9 @@ public partial class MainForm : Form
                     var restoreResult = ConfigurationHelper.RestoreFromBackup(configPath, _logger);
                     if (!restoreResult.IsSuccess)
                     {
-                        MessageBox.Show(restoreResult.Error, "復元失敗", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        MessageBox.Show(restoreResult.Error, 
+                            _localizationService.GetString("MainForm_RestoreFailedTitle") ?? "復元失敗", 
+                            MessageBoxButtons.OK, MessageBoxIcon.Error);
                         return;
                     }
                 }
@@ -173,9 +206,9 @@ public partial class MainForm : Form
             if (services.Count == 0)
             {
                 MessageBox.Show(
-                    "config.jsonに監視対象サービスが設定されていません。\n\n" +
-                    "「サービス管理」ボタンから監視対象サービスを追加してください。",
-                    "設定エラー",
+                    _localizationService.GetString("MainForm_NoServicesConfiguredMessage") ?? 
+                    "config.jsonに監視対象サービスが設定されていません。\n\n「サービス管理」ボタンから監視対象サービスを追加してください。",
+                    _localizationService.GetString("MainForm_ConfigErrorTitle") ?? "設定エラー",
                     MessageBoxButtons.OK,
                     MessageBoxIcon.Information);
                 return;
@@ -200,7 +233,9 @@ public partial class MainForm : Form
             
             if (result.IsSuccess)
             {
-                UpdateStatusLabel($"監視中 - {_serviceMonitor.MonitoredServices.Count}個のサービス");
+                var statusText = _localizationService.GetFormattedString("MainForm_StatusMonitoring", _serviceMonitor.MonitoredServices.Count) 
+                    ?? $"監視中 - {_serviceMonitor.MonitoredServices.Count}個のサービス";
+                UpdateStatusLabel(statusText);
                 btnStart.Enabled = false;
                 btnStop.Enabled = true;
                 
@@ -212,14 +247,18 @@ public partial class MainForm : Form
             }
             else
             {
-                MessageBox.Show($"監視の開始に失敗しました: {result.Error}", "エラー", 
+                var errorMessage = _localizationService.GetString("Error_MonitoringStartFailed") ?? "監視の開始に失敗しました";
+                var errorTitle = _localizationService.GetString("Error_Title") ?? "エラー";
+                MessageBox.Show($"{errorMessage}: {result.Error}", errorTitle, 
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error starting monitoring");
-            MessageBox.Show($"エラーが発生しました: {ex.Message}", "エラー",
+            var errorMessage = _localizationService.GetString("Error_ExceptionOccurred") ?? "エラーが発生しました";
+            var errorTitle = _localizationService.GetString("Error_Title") ?? "エラー";
+            MessageBox.Show($"{errorMessage}: {ex.Message}", errorTitle,
                 MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
     }
@@ -235,7 +274,8 @@ public partial class MainForm : Form
             
             if (result.IsSuccess)
             {
-                UpdateStatusLabel("監視停止");
+                var statusText = _localizationService.GetString("MainForm_StatusStopped") ?? "監視停止";
+                UpdateStatusLabel(statusText);
                 btnStart.Enabled = true;
                 btnStop.Enabled = false;
                 _cancellationTokenSource?.Cancel();
@@ -246,14 +286,18 @@ public partial class MainForm : Form
             }
             else
             {
-                MessageBox.Show($"監視の停止に失敗しました: {result.Error}", "エラー",
+                var errorMessage = _localizationService.GetString("MainForm_StopMonitoringFailed") ?? "監視の停止に失敗しました";
+                MessageBox.Show($"{errorMessage}: {result.Error}", 
+                    _localizationService.GetString("Error_Title") ?? "エラー",
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error stopping monitoring");
-            MessageBox.Show($"エラーが発生しました: {ex.Message}", "エラー",
+            var errorMessage = _localizationService.GetString("Error_ExceptionOccurred") ?? "エラーが発生しました";
+            MessageBox.Show($"{errorMessage}: {ex.Message}", 
+                _localizationService.GetString("Error_Title") ?? "エラー",
                 MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
     }
@@ -289,13 +333,16 @@ public partial class MainForm : Form
     {
         _logger.LogWarning($"Monitoring error for service '{e.ServiceName}': {e.ErrorMessage}");
         
+        var errorText = _localizationService.GetFormattedString("MainForm_StatusError", e.ServiceName) 
+            ?? $"エラー: {e.ServiceName}";
+        
         if (InvokeRequired)
         {
-            Invoke(() => UpdateStatusLabel($"エラー: {e.ServiceName}"));
+            Invoke(() => UpdateStatusLabel(errorText));
         }
         else
         {
-            UpdateStatusLabel($"エラー: {e.ServiceName}");
+            UpdateStatusLabel(errorText);
         }
     }
 
@@ -324,7 +371,8 @@ public partial class MainForm : Form
             var loggerFactory = new Utils.LoggerFactory();
             var serviceListForm = new ServiceListForm(
                 _serviceMonitor,
-                loggerFactory.CreateLogger<ServiceListForm>());
+                loggerFactory.CreateLogger<ServiceListForm>(),
+                _localizationService);
             
             if (serviceListForm.ShowDialog() == DialogResult.OK)
             {
@@ -335,7 +383,8 @@ public partial class MainForm : Form
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error opening service list form");
-            MessageBox.Show($"サービス管理画面の表示に失敗しました: {ex.Message}", "エラー",
+            var errorMessage = _localizationService.GetString("Error_ServiceListFormFailed") ?? "サービス管理画面の表示に失敗しました";
+            MessageBox.Show($"{errorMessage}: {ex.Message}", _localizationService.GetString("Error_Title") ?? "エラー",
                 MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
     }
@@ -348,14 +397,36 @@ public partial class MainForm : Form
         try
         {
             var loggerFactory = new Utils.LoggerFactory();
-            var settingsForm = new SettingsForm(loggerFactory.CreateLogger<SettingsForm>());
+            var settingsForm = new SettingsForm(
+                loggerFactory.CreateLogger<SettingsForm>(), 
+                _localizationService);
             
-            settingsForm.ShowDialog();
+            if (settingsForm.ShowDialog() == DialogResult.OK)
+            {
+                // Settings were saved, refresh UI
+                RefreshServiceList();
+                
+                // Re-apply localization to this form
+                ApplyLocalization();
+                
+                // Update status text with localized string
+                if (_serviceMonitor.IsMonitoring)
+                {
+                    var statusText = _localizationService.GetFormattedString("MainForm_StatusMonitoring", _serviceMonitor.MonitoredServices.Count) 
+                        ?? $"監視中 - {_serviceMonitor.MonitoredServices.Count}個のサービス";
+                    UpdateStatusLabel(statusText);
+                }
+                else
+                {
+                    UpdateStatusLabel(_localizationService.GetString("MainForm_Ready") ?? "準備完了");
+                }
+            }
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error opening settings form");
-            MessageBox.Show($"設定画面の表示に失敗しました: {ex.Message}", "エラー",
+            var errorMessage = _localizationService.GetString("Error_SettingsFormFailed") ?? "設定画面の表示に失敗しました";
+            MessageBox.Show($"{errorMessage}: {ex.Message}", _localizationService.GetString("Error_Title") ?? "エラー",
                 MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
     }
@@ -400,21 +471,24 @@ public partial class MainForm : Form
                 _logger.LogInformation($"  - {svc.ServiceName}: {svc.LastKnownStatus}");
             }
             
+            var enabledText = _localizationService.GetString("MainForm_Enabled") ?? "有効";
+            var disabledText = _localizationService.GetString("MainForm_Disabled") ?? "無効";
+            
             dgvMonitoredServices.DataSource = null;
             dgvMonitoredServices.DataSource = services.Select(s => new
             {
                 ServiceName = s.ServiceName,
                 DisplayName = s.DisplayName,
-                NotificationEnabled = s.NotificationEnabled ? "有効" : "無効",
+                NotificationEnabled = s.NotificationEnabled ? enabledText : disabledText,
                 Status = s.LastKnownStatus.ToString()
             }).ToList();
 
             if (dgvMonitoredServices.Columns.Count > 0)
             {
-                dgvMonitoredServices.Columns["ServiceName"].HeaderText = "サービス名";
-                dgvMonitoredServices.Columns["DisplayName"].HeaderText = "表示名";
-                dgvMonitoredServices.Columns["NotificationEnabled"].HeaderText = "通知";
-                dgvMonitoredServices.Columns["Status"].HeaderText = "状態";
+                dgvMonitoredServices.Columns["ServiceName"].HeaderText = _localizationService.GetString("MainForm_ColumnServiceName") ?? "サービス名";
+                dgvMonitoredServices.Columns["DisplayName"].HeaderText = _localizationService.GetString("MainForm_ColumnDisplayName") ?? "表示名";
+                dgvMonitoredServices.Columns["NotificationEnabled"].HeaderText = _localizationService.GetString("MainForm_ColumnNotification") ?? "通知";
+                dgvMonitoredServices.Columns["Status"].HeaderText = _localizationService.GetString("MainForm_ColumnStatus") ?? "状態";
             }
 
             _logger.LogInformation($"Refreshed service list: {services.Count} services");

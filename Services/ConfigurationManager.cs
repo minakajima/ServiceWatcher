@@ -12,6 +12,7 @@ namespace ServiceWatcher.Services;
 public class ConfigurationManager : IConfigurationManager
 {
     private readonly ILogger<ConfigurationManager> _logger;
+    private readonly ILocalizationService? _localizationService;
     private readonly string _configFilePath;
     private readonly string _backupFilePath;
     private readonly JsonSerializerOptions _jsonOptions;
@@ -22,8 +23,9 @@ public class ConfigurationManager : IConfigurationManager
     /// Initializes a new instance of ConfigurationManager with default paths.
     /// </summary>
     /// <param name="logger">Logger instance.</param>
-    public ConfigurationManager(ILogger<ConfigurationManager> logger)
-        : this(logger, null)
+    /// <param name="localizationService">Localization service for validation messages.</param>
+    public ConfigurationManager(ILogger<ConfigurationManager> logger, ILocalizationService? localizationService = null)
+        : this(logger, localizationService, null)
     {
     }
 
@@ -31,10 +33,12 @@ public class ConfigurationManager : IConfigurationManager
     /// Initializes a new instance of ConfigurationManager with custom configuration path.
     /// </summary>
     /// <param name="logger">Logger instance.</param>
+    /// <param name="localizationService">Localization service for validation messages.</param>
     /// <param name="configFilePath">Custom configuration file path. If null, uses default %LocalAppData%/ServiceWatcher/config.json.</param>
-    public ConfigurationManager(ILogger<ConfigurationManager> logger, string? configFilePath)
+    public ConfigurationManager(ILogger<ConfigurationManager> logger, ILocalizationService? localizationService, string? configFilePath)
     {
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+        _localizationService = localizationService;
         
         if (configFilePath != null)
         {
@@ -73,7 +77,7 @@ public class ConfigurationManager : IConfigurationManager
             }
         };
         
-        _validator = new ConfigurationValidator();
+        _validator = new ConfigurationValidator(_localizationService);
         
         _logger.LogInformation("ConfigurationManager initialized. Config path: {Path}", _configFilePath);
     }

@@ -290,7 +290,7 @@ public class ServiceMonitor : IServiceMonitor
         catch (Exception ex)
         {
             _logger.LogError(ex, "Failed to refresh monitored services");
-            return Result<int>.Failure($"設定の再読み込みに失敗: {ex.Message}");
+            return Result<int>.Failure($"Failed to reload configuration: {ex.Message}");
         }
     }
 

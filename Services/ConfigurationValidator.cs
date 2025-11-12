@@ -8,6 +8,12 @@ namespace ServiceWatcher.Services;
 /// </summary>
 public class ConfigurationValidator
 {
+    private readonly ILocalizationService? _localizationService;
+
+    public ConfigurationValidator(ILocalizationService? localizationService = null)
+    {
+        _localizationService = localizationService;
+    }
     /// <summary>
     /// Validates an ApplicationConfiguration instance.
     /// </summary>
@@ -19,28 +25,28 @@ public class ConfigurationValidator
         
         if (configuration == null)
         {
-            result.AddError("設定がnullです");
+            result.AddError(_localizationService?.GetString("Validation_ConfigNull") ?? "設定がnullです");
             return result;
         }
         
         // Validate monitoring interval
         if (configuration.MonitoringIntervalSeconds < 1)
         {
-            result.AddError("監視間隔は1秒以上である必要があります");
+            result.AddError(_localizationService?.GetString("Validation_IntervalTooShort") ?? "監視間隔は1秒以上である必要があります");
         }
         else if (configuration.MonitoringIntervalSeconds > 3600)
         {
-            result.AddError("監視間隔は3600秒(1時間)以下である必要があります");
+            result.AddError(_localizationService?.GetString("Validation_IntervalTooLong") ?? "監視間隔は3600秒(1時間)以下である必要があります");
         }
         
         // Validate notification display time
         if (configuration.NotificationDisplayTimeSeconds < 0)
         {
-            result.AddError("通知表示時間は0秒以上である必要があります(0 = 手動で閉じる)");
+            result.AddError(_localizationService?.GetString("Validation_NotificationTimeNegative") ?? "通知表示時間は0秒以上である必要があります(0 = 手動で閉じる)");
         }
         else if (configuration.NotificationDisplayTimeSeconds > 300)
         {
-            result.AddError("通知表示時間は300秒(5分)以下である必要があります");
+            result.AddError(_localizationService?.GetString("Validation_NotificationTimeTooLong") ?? "通知表示時間は300秒(5分)以下である必要があります");
         }
         
         // Validate monitored services list
@@ -57,12 +63,12 @@ public class ConfigurationValidator
                 
                 if (string.IsNullOrWhiteSpace(service.ServiceName))
                 {
-                    result.AddError($"サービス[{i}]: ServiceNameが空です");
+                    result.AddError(_localizationService?.GetFormattedString("Validation_ServiceNameEmpty", i) ?? $"サービス[{i}]: ServiceNameが空です");
                 }
                 
                 if (string.IsNullOrWhiteSpace(service.DisplayName))
                 {
-                    result.AddError($"サービス[{i}]: DisplayNameが空です");
+                    result.AddError(_localizationService?.GetFormattedString("Validation_DisplayNameEmpty", i) ?? $"サービス[{i}]: DisplayNameが空です");
                 }
             }
             
@@ -74,13 +80,13 @@ public class ConfigurationValidator
             
             foreach (var duplicate in duplicates)
             {
-                result.AddError($"重複したサービス名: {duplicate}");
+                result.AddError(_localizationService?.GetFormattedString("Validation_DuplicateService", duplicate) ?? $"重複したサービス名: {duplicate}");
             }
             
             // Validate service count
             if (configuration.MonitoredServices.Count > 100)
             {
-                result.AddError("監視サービス数は100個以下である必要があります");
+                result.AddError(_localizationService?.GetString("Validation_TooManyServices") ?? "監視サービス数は100個以下である必要があります");
             }
         }
         

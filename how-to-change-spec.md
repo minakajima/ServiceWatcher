@@ -1,402 +1,267 @@
-# Speckit 仕様変更ガイド
+# Slashコマンド活用ガイド (Speckit / AIチャット統合)
 
-Speckitで仕様変更を行う場合の標準的な手順を説明します。
+AIチャットへ指示を入力する際に、提供されている `/speckit.*` スラッシュコマンドを軸に「何を→どの順で→どう検証するか」を定型化するためのガイドです。旧プロンプト集をコマンド中心表現に再編しました。
 
-## 仕様変更の2つのパターン
+---
+## コマンド一覧 (再掲)
 
-### パターン1: 既存機能の変更・拡張
+### コア開発フロー
+| コマンド | 目的 | タイミング | 主たる成果物 |
+|----------|------|------------|---------------|
+| /speckit.constitution | 開発原則/指針の確立・更新 | 初回 / 破壊的方針転換時 | `constitution.md` |
+| /speckit.specify | 要件・ユーザーストーリー定義 | 機能開始直後 | `spec.md` (US, 受け入れ基準) |
+| /speckit.plan | 技術的実装計画（段階/フェーズ） | 要件確定後 | `plan.md` (Phase構成) |
+| /speckit.tasks | 実装タスク分解 | 計画承認後 | `tasks.md` (Txxx) |
+| /speckit.implement | タスク実行 (コード生成/修正) | 準備完了後 | 変更差分 + テスト結果 |
 
-既存のフィーチャー（例: `001-service-monitor`）に変更を加える場合:
+### 品質強化オプション
+| コマンド | 目的 | 実行推奨タイミング | 期待出力 |
+|----------|------|--------------------|-----------|
+| /speckit.clarify | 不十分な要件の質問生成 | `/specify` 前 or 直後 | 質問リスト / 補足要求 |
+| /speckit.analyze | アーティファクト整合性・網羅性分析 | `/tasks` 完了直後 | 欠落/矛盾指摘一覧 |
+| /speckit.checklist | 品質チェック項目生成 | 実装前/レビュー前 | カスタムチェックリスト |
 
-```powershell
-# 1. 新しいブランチを作成
-git checkout main
-git pull origin main  # 最新の状態を取得
-git checkout -b 001-service-monitor-v2
+---
+## 推奨ワークフロー (既存機能拡張)
+1. `/speckit.clarify` で不足要件を洗い出し (任意)
+2. `/speckit.specify` で新USや受け入れ基準を追加
+3. `/speckit.plan` で新フェーズ (例: Phase 7) を追加
+4. `/speckit.tasks` で T146+ のタスクを生成
+5. `/speckit.analyze` で spec / plan / tasks の整合性検証
+6. `/speckit.checklist` で品質ゲート (テスト/ログ/国際化 等) を明示
+7. `/speckit.implement` でタスクを安全に順次実行
 
-# 2. 仕様書を更新
-# specs/001-service-monitor/spec.md を編集して変更内容を追記
-# 例: 新しいユーザーストーリー(US4)を追加
+> 既存コード差分が大きい場合は `/speckit.analyze` を複数回挟み回帰影響を常時可視化。
 
-# 3. チェックリストで要件を確認
-# .github/prompts/speckit.checklist.prompt.md の指示に従って
-# specs/001-service-monitor/checklists/requirements.md を更新
-
-# 4. プランを更新
-# .github/prompts/speckit.plan.prompt.md の指示に従って
-# specs/001-service-monitor/plan.md を更新
-# - 新しいフェーズ(Phase 7)を追加
-# - アーキテクチャへの影響を記載
-
-# 5. タスク分解
-# .github/prompts/speckit.tasks.prompt.md の指示に従って
-# specs/001-service-monitor/tasks.md に新タスク(T146以降)を追加
-
-# 6. 実装
-# .github/prompts/speckit.implement.prompt.md の指示に従って実装
-
-# 7. コミット
-git add .
-git commit -m "feat: 変更内容のサマリー (T146-T150)"
-
-# 8. マージ
-git checkout main
-git merge 001-service-monitor-v2 --no-ff -m "Merge: 変更内容の詳細"
-
-# 9. タグ作成（バージョンアップの場合）
-git tag -a v1.1.0 -m "Release version 1.1.0 - 変更内容"
-
-# 10. プッシュ
-git push origin main
-git push origin v1.1.0
+---
+## 推奨ワークフロー (新機能追加)
+```
+/speckit.clarify
+  → 未確定領域質問を回答
+/speckit.specify
+  → US/受け入れ基準確定
+/speckit.plan
+  → フェーズ分解 (MVP / 拡張 / Hardening)
+/speckit.tasks
+  → T001 から連番生成
+/speckit.analyze
+  → 欠落モデル/境界条件指摘反映
+/speckit.checklist
+  → ドキュメント/テスト/性能チェック生成
+/speckit.implement
+  → 順次実装 (フェーズ単位 or バッチ)
 ```
 
-### パターン2: 新機能の追加
+---
+## コマンド別入力テンプレート
 
-全く新しい機能を別フィーチャーとして追加する場合:
-
-```powershell
-# 1. 新機能用のディレクトリとブランチを作成
-.\.specify\scripts\powershell\create-new-feature.ps1 -FeatureId "002-email-notification"
-
-# これにより以下が自動作成される:
-# - specs/002-email-notification/ (テンプレートから)
-# - ブランチ: 002-email-notification
-
-# 2. 要件を明確化
-# GitHub Copilot Chatで以下を実行:
-# 「@workspace .github/prompts/speckit.clarify.prompt.md の指示に従って、
-#  メール通知機能の要件を整理してください」
-
-# 3. 仕様書を作成
-# 「.github/prompts/speckit.specify.prompt.md の指示に従って、
-#  specs/002-email-notification/spec.md を完成させてください」
-
-# 4. チェックリストで検証
-# specs/002-email-notification/checklists/requirements.md を確認・更新
-
-# 5. 実装計画とタスク分解
-# plan.md と tasks.md を作成
-
-# 6. 実装
-# 「.github/prompts/speckit.implement.prompt.md の指示に従って、
-#  specs/002-email-notification/tasks.md の全タスクを実装してください」
-
-# 7. コミット
-git add .
-git commit -m "feat: Add email notification feature"
-
-# 8. マージ
-git checkout main
-git merge 002-email-notification --no-ff -m "Merge: Email notification feature"
-
-# 9. タグ作成
-git tag -a v1.1.0 -m "Release version 1.1.0 - Email notification"
-
-# 10. プッシュ
-git push origin main
-git push origin v1.1.0
+### /speckit.clarify 用
+```
+/speckit.clarify
+前提:
+- 目的: 監視間隔動的変更 (US4) 追加
+- 未確定: ログ粒度 / UI即時反映方法 / エラー表示方針
+出力形式: 質問一覧 (カテゴリ別: UI / ドメイン / 例外 / 運用) + 重要度タグ(H/M/L)
 ```
 
-## 実践的なワークフロー例
-
-### 例: 「監視間隔を動的に変更できるようにする」変更
-
-```powershell
-# ステップ1: 現在の仕様を確認
-cat specs\001-service-monitor\spec.md
-
-# ステップ2: 変更ブランチを作成
-git checkout main
-git checkout -b 001-service-monitor-dynamic-interval
-
-# ステップ3: 仕様書を更新
-# specs/001-service-monitor/spec.md を編集
+### /speckit.specify 用
+```
+/speckit.specify
+目的: US4 追加
+既存参照: specs/001-service-monitor/spec.md (US1-US3) 概要要約後に差分のみ提示
+要求:
+- 新しい US4 の全文
+- 受け入れ基準 (箇条書き, テスト可能表現)
+- 非ゴール (除外範囲)
 ```
 
-```markdown
-### US4: 動的監視間隔変更
-
-**As a** システム管理者  
-**I want to** 監視中に監視間隔を動的に変更できるようにしたい  
-**So that** サービスの状態に応じて監視の粒度を調整できる
-
-#### 受け入れ基準
-- [ ] 設定画面で監視間隔を変更できる
-- [ ] 変更は即座に反映される（再起動不要）
-- [ ] 変更履歴がログに記録される
-- [ ] 最小値: 1秒、最大値: 3600秒（1時間）
+### /speckit.plan 用
+```
+/speckit.plan
+目的: 動的監視間隔の実装フェーズ設計
+提供情報:
+- 影響ファイル: ServiceMonitor.cs, SettingsForm.cs, config.json, ConfigurationValidator.cs
+- 制約: 既存監視ループ停止不要 / 後方互換維持
+要求:
+- 新規 Phase 7: 'Dynamic Interval'
+- フェーズ内ステップ列挙 (API拡張 → UI → Validation → Logging → Docs)
 ```
 
-```powershell
-# ステップ4: タスクを追加
-# specs/001-service-monitor/tasks.md の最後に追記
+### /speckit.tasks 用
+```
+/speckit.tasks
+目的: Phase 7 をタスク分解
+ガイドライン:
+- 1タスク = 1責務 (最大10ファイル編集)
+- テスト追加は機能タスク直後
+出力形式: T146-T155 / 依存関係 / 成功条件 / リスク
 ```
 
-```markdown
-## Phase 7: Dynamic Configuration (T146-T155)
-
-### ステップ1: インターフェース拡張 (T146-T148)
-
-#### T146: ServiceMonitor に間隔変更メソッド追加
-- [ ] IServiceMonitor に UpdateMonitoringInterval(int seconds) メソッド追加
-- [ ] ServiceMonitor に実装
-- [ ] タイマーの再スケジュール処理
-
-#### T147: 設定ファイルスキーマ拡張
-- [ ] config.json に monitoringInterval フィールド追加
-- [ ] ConfigurationValidator で検証ロジック追加（1-3600秒）
-- [ ] ConfigurationHelper でロード・保存処理更新
-
-#### T148: ユニットテスト作成
-- [ ] ServiceMonitor.UpdateMonitoringInterval のテスト
-- [ ] 設定保存・読込のテスト
-
-### ステップ2: UI実装 (T149-T153)
-
-#### T149: SettingsForm に間隔設定コントロール追加
-- [ ] NumericUpDown コントロール配置
-- [ ] ラベル追加: "監視間隔 (秒)"
-- [ ] 初期値の読込処理
-
-#### T150: リアルタイム適用ボタン実装
-- [ ] "適用" ボタン追加
-- [ ] クリックイベントで ServiceMonitor.UpdateMonitoringInterval 呼び出し
-- [ ] 成功・失敗のフィードバック表示
-
-#### T151: MainForm にステータス表示追加
-- [ ] 現在の監視間隔を表示するラベル
-- [ ] 変更時に自動更新
-
-#### T152: バリデーション実装
-- [ ] 入力値チェック（1-3600秒）
-- [ ] エラーメッセージ表示
-
-#### T153: UI統合テスト
-- [ ] 手動テストシナリオ実行
-
-### ステップ3: ログとドキュメント (T154-T155)
-
-#### T154: ログ出力追加
-- [ ] 間隔変更時にログ記録
-- [ ] 変更前後の値を記録
-
-#### T155: ドキュメント更新
-- [ ] README.md に機能説明追加
-- [ ] CHANGELOG.md に v1.1.0 エントリ追加
-- [ ] config.template.json を更新
+### /speckit.analyze 用
+```
+/speckit.analyze
+対象: spec.md (US4), plan.md Phase 7, tasks.md (T146-T155)
+要求:
+- 矛盾 (値範囲不整合等)
+- 欠落 (例: 負値テスト未指定)
+- 重複 (類似タスク)
+出力: Issue種別 / 対象 / 修正提案
 ```
 
-```powershell
-# ステップ5: Copilotに実装依頼
-# GitHub Copilot Chat で以下を入力:
+### /speckit.checklist 用
+```
+/speckit.checklist
+目的: 実装前品質ゲート定義
+カテゴリ: テスト / 例外処理 / ログ / i18n / 設定永続化 / パフォーマンス
+形式: チェック項目 [ ] / 自動判定可否 / 対応タスク番号
 ```
 
+### /speckit.implement 用
 ```
-@workspace .github/prompts/speckit.implement.prompt.md の指示に従って実装してください。
-
-変更内容:
-- specs/001-service-monitor/spec.md にUS4を追加済み
-- specs/001-service-monitor/tasks.md にT146-T155を追加済み
-
-実装対象: T146-T155 (動的監視間隔変更機能)
-
-開始してください。
-```
-
-```powershell
-# ステップ6: 実装完了後、コミット
-git add .
-git commit -m "feat: Add dynamic monitoring interval change (T146-T155)
-
-- Add UpdateMonitoringInterval method to ServiceMonitor
-- Add interval configuration UI in SettingsForm
-- Update configuration schema and validation
-- Add logging for interval changes
-- Update documentation
-
-Implements US4: Dynamic monitoring interval change
-Closes T146-T155"
-
-# ステップ7: マージ
-git checkout main
-git merge 001-service-monitor-dynamic-interval --no-ff -m "Merge: Dynamic monitoring interval feature
-
-Complete implementation of US4 - Dynamic monitoring interval change
-
-Features:
-- Real-time interval adjustment without restart
-- UI controls with validation (1-3600 seconds)
-- Configuration persistence
-- Logging of interval changes
-
-Version: 1.1.0
-Tasks: T146-T155"
-
-# ステップ8: バージョンタグ作成
-git tag -a v1.1.0 -m "Release version 1.1.0 - Dynamic Monitoring Interval
-
-New Features:
-- Dynamic monitoring interval adjustment (US4)
-- Real-time configuration update without restart
-
-Changes:
-- Updated ServiceMonitor with interval control API
-- Enhanced SettingsForm with interval configuration UI
-- Extended configuration schema and validation
-
-Implements: T146-T155"
-
-# ステップ9: プッシュ
-git push origin main
-git push origin v1.1.0
-
-# ステップ10: ブランチクリーンアップ（オプション）
-git branch -d 001-service-monitor-dynamic-interval
+/speckit.implement
+対象タスク: T146-T148 (API + Validation + テスト)
+進め方:
+- タスクごと: 変更予定ファイル宣言 → 実装 → ビルド/テスト結果 (PASS/FAIL) → 次へ
+制約:
+- 無関係ファイル非編集
+- 既存公開API破壊時は設計再協議を促す
 ```
 
-## 重要なポイント
-
-### ✅ やるべきこと
-
-1. **常にブランチを作成**して変更する
-   - mainブランチは保護する
-   - フィーチャーブランチで作業する
-
-2. **spec.mdを最初に更新**して変更内容を明確にする
-   - 新しいユーザーストーリーを追加
-   - 既存のストーリーを修正
-   - 受け入れ基準を明確に記載
-
-3. **tasks.mdで追跡可能**にする
-   - タスク番号を継続（T146以降を追加）
-   - 古いタスクは削除せず履歴として残す
-   - チェックボックスで進捗管理
-
-4. **constitution.mdの原則**に従っているか確認する
-   - `.specify/memory/constitution.md` を参照
-   - 設計原則に違反していないか確認
-
-5. **マージ時は--no-ff**でマージコミットを残す
-   - 履歴を明確に保つ
-   - 機能単位でのロールバックを容易にする
-
-6. **バージョンタグを作成**する
-   - セマンティックバージョニング（Major.Minor.Patch）
-   - タグメッセージに変更内容を記載
-
-7. **ドキュメントを更新**する
-   - CHANGELOG.md に変更履歴を追加
-   - README.md に新機能の説明を追加
-   - 必要に応じて DEPLOY.md を更新
-
-### ❌ 避けるべきこと
-
-1. **mainブランチで直接編集しない**
-   - 必ずフィーチャーブランチを作成
-
-2. **仕様書を更新せずに実装しない**
-   - コードより先に仕様を更新
-   - 仕様なき実装は技術的負債
-
-3. **タスク番号を振り直さない**
-   - T001から始めない
-   - 既存の最大番号+1から開始
-
-4. **古いタスクを削除しない**
-   - 履歴として残す
-   - チェック済み([x])で完了を示す
-
-5. **コミットメッセージを省略しない**
-   - Conventional Commits形式を使用
-   - feat:, fix:, docs:, refactor: などのプレフィックス
-
-6. **テストを省略しない**
-   - 既存機能への影響を確認
-   - 新機能のテストケースを追加
-
-## Copilotへの依頼テンプレート
-
-### 仕様変更時
-
+---
+## 途中で方針不安時の"安全確認"例
 ```
-@workspace .github/prompts/speckit.implement.prompt.md の指示に従って実装してください。
-
-変更内容:
-- specs/{feature-id}/spec.md を更新済み（US{n}追加）
-- specs/{feature-id}/tasks.md にT{xxx}-T{yyy}を追加済み
-
-実装対象: T{xxx}-T{yyy} ({機能名})
-
-constitution.mdの原則に従い、既存コードとの整合性を保ちながら実装してください。
+/speckit.analyze
+追加情報: 途中まで実装済み (T146-T150) コミット差分要約:
+- ServiceMonitor.cs: Timer再構成
+- SettingsForm.cs: Interval入力追加
+要求: 潜在的なレース/リソースリーク/イベント二重購読を検証し必要追加タスク提案
 ```
 
-### 新機能追加時
+---
+## 品質保証とゲート例 (コマンド連携)
+| フェーズ | 推奨コマンド | 目的 |
+|----------|--------------|------|
+| 要件未確定 | /speckit.clarify | 質問生成/あいまい除去 |
+| 要件定義 | /speckit.specify | 明確なUS & 受入基準 |
+| 計画設計 | /speckit.plan | 技術的分解と順序 |
+| タスク列挙 | /speckit.tasks | 実装単位の明確化 |
+| 整合性検証 | /speckit.analyze | 欠落/矛盾発見 |
+| 実装前品質 | /speckit.checklist | チェックリスト生成 |
+| 実装 | /speckit.implement | 実コード変更 |
 
+---
+## 失敗しやすいアンチパターン → コマンド活用改善
+| アンチパターン | 問題 | 修正行動 |
+|----------------|------|-----------|
+| 仕様曖昧のまま実装開始 | 後戻り多い | 先に `/speckit.clarify` で質問抽出 |
+| タスク粒度が巨大 | 差分レビュー困難 | `/speckit.tasks` で再分解依頼 |
+| 受け入れ基準とテスト乖離 | 網羅漏れ | `/speckit.analyze` で整合性チェック |
+| チェック観点属人化 | 品質ばらつき | `/speckit.checklist` で標準化 |
+| 実装後まとめて修正 | 回帰誘発 | `/speckit.implement` で段階報告 |
+
+---
+## 差分影響分析プロンプト例 (高度)
 ```
-@workspace 新機能「{機能名}」を実装したいです。
-
-以下の手順で進めてください:
-1. .github/prompts/speckit.clarify.prompt.md に従って要件整理
-2. .github/prompts/speckit.specify.prompt.md に従って仕様書作成
-3. .github/prompts/speckit.plan.prompt.md に従って実装計画作成
-4. .github/prompts/speckit.tasks.prompt.md に従ってタスク分解
-5. .github/prompts/speckit.implement.prompt.md に従って実装
-
-フィーチャーID: {feature-id}
-ブランチ名: {feature-id}
-```
-
-## ディレクトリ構造
-
-```
-specs/
-├── 001-service-monitor/          # 既存機能
-│   ├── spec.md                   # 仕様書（US1-US4...）
-│   ├── plan.md                   # 実装計画（Phase 1-7...）
-│   ├── tasks.md                  # タスク一覧（T001-T155...）
-│   ├── data-model.md             # データモデル設計
-│   ├── research.md               # 技術調査
-│   ├── quickstart.md             # クイックスタート
-│   ├── checklists/
-│   │   └── requirements.md       # 要件チェックリスト
-│   └── contracts/                # インターフェース仕様
-│       ├── README.md
-│       ├── IServiceMonitor.md
-│       ├── INotificationService.md
-│       └── IConfigurationManager.md
-│
-└── 002-email-notification/       # 新機能（例）
-    ├── spec.md
-    ├── plan.md
-    ├── tasks.md
-    └── ...
+/speckit.analyze
+追加観点: パフォーマンス (監視間隔頻度増加時の CPU 使用率) / スレッド安全性
+要求: 現在の設計が高頻度(1秒)ポーリング時に問題を起こす箇所と緩和策 (Backoff / Debounce / Cancellation Token 再利用) を列挙
 ```
 
-## バージョニング規則
-
-### セマンティックバージョニング
-
-- **Major (X.0.0)**: 破壊的変更、API変更
-- **Minor (x.Y.0)**: 新機能追加（後方互換性あり）
-- **Patch (x.y.Z)**: バグ修正、軽微な変更
-
-### 例
-
-- `v1.0.0` → `v1.1.0`: 動的監視間隔変更機能追加（新機能）
-- `v1.1.0` → `v1.1.1`: 設定保存時のバグ修正（パッチ）
-- `v1.1.1` → `v2.0.0`: 設定ファイル形式変更（破壊的変更）
-
-## トラブルシューティング
-
-### Q: タスク番号が重複してしまった
-
-```powershell
-# tasks.md を開いて最後のタスク番号を確認
-cat specs\001-service-monitor\tasks.md | Select-String "^#### T"
-
-# 最新番号+1から開始するように修正
+---
+## バージョンタグ生成支援
 ```
+/speckit.checklist
+目的: v1.1.0 リリース前最終チェック
+カテゴリ追加: ReleaseDocs / MigrationNotes
+→ 完了後 `/speckit.implement` で README & CHANGELOG 更新タスク実行
+```
+その後:
+```
+タグ生成要約:
+Version: v1.1.0
+Type: Minor (後方互換)
+Added: US4 Dynamic Interval
+Changed: SettingsForm UI
+Removed: なし
+Fixed: 初期ステータス Unknown 表示遅延
+```
+
+---
+## クイックチートシート
+| 状態 | 次の一手 | 入力例 |
+|------|----------|--------|
+| ざっくり要件しか無い | clarify | `/speckit.clarify 機能: 動的間隔変更 未確定: エラー表示/ログ粒度` |
+| US記述済み | plan | `/speckit.plan 影響ファイル: ServiceMonitor.cs ...` |
+| 計画OK | tasks | `/speckit.tasks Phase7 分解指針: 1責務1タスク` |
+| タスク生成後 | analyze | `/speckit.analyze 対象: spec/plan/tasks` |
+| 品質ゲート必要 | checklist | `/speckit.checklist カテゴリ: ログ/テスト/性能` |
+| 実装開始 | implement | `/speckit.implement タスク: T146-T148` |
+
+---
+## ベストプラクティス (入力フォーマット最適化)
+1. 冒頭 1行で目的
+2. 前提 (既存ファイル・ブランチ・未決事項)
+3. 成果物形式 (テーブル/箇条書き/コード差分 等)
+4. 制約 (互換性 / パフォーマンス / セキュリティ)
+5. コマンド実行
+6. 次段階へ移る前に `/speckit.analyze` で健全性確認
+
+---
+## 例: US4 実装一連 (最短版)
+```
+/speckit.clarify 目的: US4 動的監視間隔 既存: US1-3 未確定: ログ粒度/UI即時反映方式
+/speckit.specify 差分: 新US4 受け入れ基準 (1-3600秒 / 即時適用 / ログ記録)
+/speckit.plan 影響: ServiceMonitor.cs / SettingsForm.cs / config.json / Validator
+/speckit.tasks Phase7 → T146 API / T147 Schema / T148 Test / T149 UI Control / T150 Apply Button / T151 Interval Label / T152 Validation / T153 Manual test / T154 Logging / T155 Docs
+/speckit.analyze 対象: spec/plan/tasks 抜け: 負値/境界テスト提案
+/speckit.checklist カテゴリ: Validation / Logging / i18n / Persistence / Concurrency
+/speckit.implement タスク: T146-T148 (段階レポート)
+```
+
+---
+## トラブルシューティング (コマンド併用)
+| 問題 | 対応コマンド組 | ねらい |
+|------|---------------|--------|
+| タスク重複 | /speckit.analyze + /speckit.tasks | 再生成と重複検出 |
+| 要件抜けが後から判明 | /speckit.clarify 再実行 | 追加質問で補完 |
+| 実装で方向性揺れ | /speckit.plan 再生成 | 計画再固定 |
+| 品質観点漏れ | /speckit.checklist | チェックリスト再評価 |
+
+---
+## セマンティックバージョニングとコマンド連携
+| 変更種別 | 前段準備 | 推奨コマンド | 追加観点 |
+|-----------|----------|--------------|-----------|
+| Patch | 影響最小差分特定 | /speckit.analyze | 回帰テスト最小集合 |
+| Minor | 新US追加 | /speckit.specify /plan /tasks | 互換性維持確認 |
+| Major | 破壊的API計画 | /speckit.clarify /plan /analyze | 移行手順 / Deprecation |
+
+---
+## 最終出荷前レビュー例
+```
+/speckit.analyze 対象: spec.md / plan.md / tasks.md / 直近 diff
+要求:
+- 公開API破壊有無
+- 未テスト境界 1-3件
+- ログ/例外/国際化不足指摘
+→ 修正後 `/speckit.checklist` で最終ゲート生成
+```
+
+---
+## 注意点まとめ
+- スラッシュコマンドは段階遷移のスイッチ。飛ばさず直列化で精度向上
+- 大量一括実装は `/speckit.implement` で避け、タスクバッチ(3-5件)単位
+- 分析結果は次コマンドにフィードバックして反復最適化
+
+---
+## 旧ガイドからの移行メモ
+旧: 手動でプロンプト文章を作成 → 新: 標準化コマンドで成果物自動生成 → 人は差分確認と補正へ集中。
+
+---
+## 追加要望がある場合
+以下のパターンで追記可能: テスト生成強化 / 負荷試験観点 / セキュリティチェック / i18n改善。必要になったら `/speckit.clarify` で新カテゴリ質問抽出 → `/speckit.checklist` へ反映。
+
+---
+AI入力品質 = 出力品質。目的/前提/制約/成果物形式 + 適切な `/speckit.*` コマンドを組み合わせ、再現性の高い進行を維持してください。
 
 ### Q: マージ時にコンフリクトが発生した
 
