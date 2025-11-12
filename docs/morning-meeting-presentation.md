@@ -74,7 +74,7 @@ style: |
     justify-content: center;
   }
   section.title h1 {
-    font-size: 3em;
+    font-size: 2.5em;
     margin-bottom: 0.5em;
   }
 ---
