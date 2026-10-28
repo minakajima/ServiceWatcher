@@ -41,7 +41,10 @@ public class Logger : ILogger
 
     public IDisposable? BeginScope<TState>(TState state) where TState : notnull => null;
 
-    public bool IsEnabled(LogLevel logLevel) => logLevel != LogLevel.None;
+    // 定期ポーリングで出力されるDebug/Traceログによるファイル肥大化を防ぐため、Information以上のみ出力する
+    private static readonly LogLevel MinimumLevel = LogLevel.Information;
+
+    public bool IsEnabled(LogLevel logLevel) => logLevel != LogLevel.None && logLevel >= MinimumLevel;
 
     public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception? exception, Func<TState, Exception?, string> formatter)
     {

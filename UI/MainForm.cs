@@ -465,10 +465,10 @@ public partial class MainForm : Form
                 }
             }
             
-            _logger.LogInformation($"RefreshServiceList: IsMonitoring={_serviceMonitor.IsMonitoring}, Count={services.Count}");
+            _logger.LogDebug($"RefreshServiceList: IsMonitoring={_serviceMonitor.IsMonitoring}, Count={services.Count}");
             foreach (var svc in services)
             {
-                _logger.LogInformation($"  - {svc.ServiceName}: {svc.LastKnownStatus}");
+                _logger.LogDebug($"  - {svc.ServiceName}: {svc.LastKnownStatus}");
             }
             
             var enabledText = _localizationService.GetString("MainForm_Enabled") ?? "有効";
@@ -491,7 +491,7 @@ public partial class MainForm : Form
                 dgvMonitoredServices.Columns["Status"].HeaderText = _localizationService.GetString("MainForm_ColumnStatus") ?? "状態";
             }
 
-            _logger.LogInformation($"Refreshed service list: {services.Count} services");
+            _logger.LogDebug($"Refreshed service list: {services.Count} services");
         }
         catch (Exception ex)
         {

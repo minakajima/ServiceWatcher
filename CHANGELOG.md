@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.0.0.2] - 2026-10-28
+
+### Changed
+- Debug level logs emitted by periodic polling are no longer written (minimum log level is now Information)
+- RefreshServiceList logs lowered to Debug level
+
 ## [1.0.0] - 2025-10-31
 
 ### Added
